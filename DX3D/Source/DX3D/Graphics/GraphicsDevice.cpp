@@ -5,6 +5,7 @@
 #include <DX3D/Graphics/ShaderBinary.h>
 #include <DX3D/Graphics/GraphicsPipelineState.h>
 #include <DX3D/Graphics/VertexBuffer.h>
+#include <DX3D/Graphics/VertexShaderSignature.h>
 
 dx3d::GraphicsDevice::GraphicsDevice(const GraphicsDeviceDesc& desc) : Base(desc.base)
 {
@@ -57,6 +58,11 @@ dx3d::GraphicsPipelineStatePtr dx3d::GraphicsDevice::createGraphicsPipelineState
 dx3d::VertexBufferPtr dx3d::GraphicsDevice::createVertexBuffer(const VertexBufferDesc& desc)
 {
 	return std::make_shared<VertexBuffer>(desc, getGraphicsResourceDesc());
+}
+
+dx3d::VertexShaderSignaturePtr dx3d::GraphicsDevice::createVertexShaderSignature(const VertexShaderSignatureDesc& desc)
+{
+	return std::make_shared<VertexShaderSignature>(desc, getGraphicsResourceDesc());
 }
 
 void dx3d::GraphicsDevice::executeCommandList(DeviceContext& context)
