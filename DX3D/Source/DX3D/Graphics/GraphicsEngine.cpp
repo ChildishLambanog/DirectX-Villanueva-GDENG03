@@ -17,48 +17,50 @@ dx3d::GraphicsEngine::GraphicsEngine(const GraphicsEngineDesc& desc) : Base(desc
 	std::ifstream shaderFileStream(shaderFileFPath);
 	if (!shaderFileStream) DX3DLogThrowError("Failed to open shader file");
 
+	//Load the RayMarcher Pixel Shader
+	constexpr char rayMarcherFileFPath[] = "DX3D/Assets/Shaders/RayMarcher.hlsl";
+	std::ifstream rmShaderFileStream(rayMarcherFileFPath);
+	if (!rmShaderFileStream) DX3DLogThrowError("Failed to open ray marcher shader file!");
+	
+	std::string rmShaderFileData
+	{ 
+		std::istreambuf_iterator<char>(rmShaderFileStream), 
+		std::istreambuf_iterator<char>() 
+	};
+
 	std::string shaderFileData
 	{
-		std::istreambuf_iterator<char>(shaderFileStream),
+		std::istreambuf_iterator<char>(shaderFileStream), 
 		std::istreambuf_iterator<char>()
 	};
  
 	auto shaderSourceCode = shaderFileData.c_str();
-	auto shaderSourceCodeSize = shaderFileData.length();
+	auto shaderSourceCodeSize = shaderFileData.length();\
 
-	auto vs = device.compileShader({ shaderFileFPath, shaderSourceCode, shaderSourceCodeSize, "VSMain", ShaderType::VertexShader });
-	
+	auto rmSourceCode = rmShaderFileData.c_str();\
+	auto rmSourceCodeSize = rmShaderFileData.length();\
+
+	auto vs = device.compileShader({ rayMarcherFileFPath, shaderSourceCode, shaderSourceCodeSize, "VSMain", ShaderType::VertexShader });
 	auto ps = device.compileShader({ shaderFileFPath, shaderSourceCode, shaderSourceCodeSize, "PSMain", ShaderType::PixelShader });
-
-	auto vsSignature = device.createVertexShaderSignature ({ vs });
-
+	auto vsSignature = device.createVertexShaderSignature({ vs });
 	m_pipeline = device.createGraphicsPipelineState({ *vsSignature, *ps });
+
+
+	//Load standard Basic Shader for VS 
+	auto m_rayMarcherPsBinary = device.compileShader({ rayMarcherFileFPath, rmSourceCode, rmSourceCodeSize, "PSMain", dx3d::ShaderType::PixelShader });
+	m_rayMarcherPipeline = device.createGraphicsPipelineState({ *vsSignature, *m_rayMarcherPsBinary });
+
 
 	const Vertex vertexList[] =
 	{
-		//Quad Rainbow
-		{ {-0.5f, -0.5f, 0.0f}, {1, 0, 0, 1} },
-		{ {-0.5f, 0.5f, 0.0f}, {0, 1, 0, 1} },
-		{ {0.5f, 0.5f, 0.0f}, {0, 0, 1, 1} },
+		//Quad
+		{ { -1.0f, -1.0f, 0.0f }, {-1.0f, -1.0f, 0.0f, 1.0f} },
+		{ {-1.0f, 1.0f, 0.0f}, {-1.0f,  1.0f, 0.0f, 1.0f} },
+		{ {1.0f, 1.0f, 0.0f}, { 1.0f,  1.0f, 0.0f, 1.0f} },
 
-		{ {0.5f, 0.5f, 0.0f}, {0, 0, 1, 1} },
-		{ {0.5f, -0.5f, 0.0f}, {1, 0, 1, 1} },
-		{ {-0.5f, -0.5f, 0.0f}, {1, 0, 0, 1} }
-
-		//Triangle Rainbow
-		//{ {-0.5f, -0.5f, 0.0f}, {1, 0, 0, 1} },
-		//{ {0.0f, 0.5f, 0.0f}, {0, 1, 0, 1} },
-		//{ {0.5f, -0.5f, 0.0f}, {0, 0, 1, 1} }
-
-		//Quad Green
-		//{ {-0.5f, -0.5f, 0.0f}, {0, 1, 0, 1} },
-		//{ {-0.5f, 0.5f, 0.0f}, {0, 1, 0, 1} },
-		//{ {0.5f, 0.5f, 0.0f}, {0, 1, 0, 1} },
-
-		//{ {0.5f, 0.5f, 0.0f}, {0, 1, 0, 1} },
-		//{ {0.5f, -0.5f, 0.0f}, {0, 1, 0, 1} },
-		//{ {-0.5f, -0.5f, 0.0f}, {0, 1, 0, 1} }
-
+		{ {1.0f, 1.0f, 0.0f}, {1.0f,  1.0f, 0.0f, 1.0f} },
+		{ {1.0f, -1.0f, 0.0f}, {1.0f,  1.0f, 0.0f, 1.0f} },
+		{ {-1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f, 1.0f} }
 	};
 
 	m_vb = device.createVertexBuffer({vertexList, std::size(vertexList), sizeof(Vertex)});
@@ -77,17 +79,20 @@ dx3d::GraphicsDevice& dx3d::GraphicsEngine::getGraphicsDevice() noexcept
 void dx3d::GraphicsEngine::render(SwapChain& swapChain)
 {
 	auto& context = *m_deviceContext;
+	auto& device = *m_graphicsDevice;
+	auto& vb = *m_vb;
+
 	context.clearAndSetBackBuffer(swapChain, { 0.22f, 0.73f, 0.73f, 1.0f }); //change the second parameter to change the color of the back buffer.
 	context.setGraphicsPipelineState(*m_pipeline);
 
 	context.setViewportSize(swapChain.getSize());
 
-	auto& vb = *m_vb;
+	//Bind the Pipeline state that contains the RayMarcher pixel shader
+	context.setGraphicsPipelineState(*m_rayMarcherPipeline);
+
 	context.setVertexBuffer(vb);
-	context.drawTriangleList(vb.getVertexListSize(), 0u);
+	context.drawTriangleList(vb.getVertexListSize(), 0);
 
-
-	auto& device = *m_graphicsDevice;
 	device.executeCommandList(context);
 	swapChain.present();
 }

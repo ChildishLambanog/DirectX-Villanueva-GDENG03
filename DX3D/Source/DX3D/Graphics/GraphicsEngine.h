@@ -27,5 +27,9 @@ namespace dx3d
 			DeviceContextPtr m_deviceContext{};
 			GraphicsPipelineStatePtr m_pipeline{};
 			VertexBufferPtr m_vb{};
+
+			//RayMarcher
+			std::shared_ptr<ShaderBinary> m_rayMarcherShaderBinary{};
+			GraphicsPipelineStatePtr m_rayMarcherPipeline{};
 	};
 }
