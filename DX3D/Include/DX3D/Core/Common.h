@@ -53,7 +53,12 @@ namespace dx3d
 		ShaderType shaderType{};
 	};
 
-	struct ShaderBinaryData
+	struct VertexShaderSignatureDesc
+	{
+		const ShaderBinaryPtr& vsBinary;
+	};
+
+	struct BinaryData
 	{
 		const void* data{};
 		size_t dataSize{};
@@ -61,7 +66,7 @@ namespace dx3d
 
 	struct GraphicsPipelineStateDesc
 	{
-		const ShaderBinary& vs;
+		const VertexShaderSignature& vs;
 		const ShaderBinary& ps;
 	};
 

@@ -4,6 +4,7 @@
 #include <DX3D/Graphics/SwapChain.h>
 #include <DX3D/Math/Vec3.h>
 #include <DX3D/Graphics/VertexBuffer.h>
+#include <fstream>
 
 dx3d::GraphicsEngine::GraphicsEngine(const GraphicsEngineDesc& desc) : Base(desc.base)
 {
@@ -12,34 +13,55 @@ dx3d::GraphicsEngine::GraphicsEngine(const GraphicsEngineDesc& desc) : Base(desc
 	auto& device = *m_graphicsDevice;
 	m_deviceContext = device.createDeviceContext();
 
-	constexpr char shaderSourceCode[] =
-		R"(
-float4 VSMain(float3 pos: POSITION): SV_POSITION
-{
-return float4(pos.xyz, 1.0);
-}
-float4 PSMain() : SV_TARGET
-{
-	return float4(0.89, 0.44, 0.47, 1.0); //change this to change the color of the triangle. 
-}
-)";
-	constexpr char shaderSourceName[] = "Basic";
-	constexpr auto shaderSourceCodeSize = std::size(shaderSourceCode);
+	constexpr char shaderFileFPath[] = "DX3D/Assets/Shaders/Basic.hlsl";
+	std::ifstream shaderFileStream(shaderFileFPath);
+	if (!shaderFileStream) DX3DLogThrowError("Failed to open shader file");
 
-	auto vs = device.compileShader({ shaderSourceName, shaderSourceCode, shaderSourceCodeSize, "VSMain", ShaderType::VertexShader });
-	
-	auto ps = device.compileShader({ shaderSourceName, shaderSourceCode, shaderSourceCodeSize, "PSMain", ShaderType::PixelShader });
-
-	m_pipeline = device.createGraphicsPipelineState({ *vs, *ps });
-
-	const Vec3 vertexList[] =
+	std::string shaderFileData
 	{
-		{-0.5f, -0.5f, 0.0f},
-		{0.0f, 0.5f, 0.0f},
-		{0.5f, -0.5f, 0.0f}
+		std::istreambuf_iterator<char>(shaderFileStream),
+		std::istreambuf_iterator<char>()
+	};
+ 
+	auto shaderSourceCode = shaderFileData.c_str();
+	auto shaderSourceCodeSize = shaderFileData.length();
+
+	auto vs = device.compileShader({ shaderFileFPath, shaderSourceCode, shaderSourceCodeSize, "VSMain", ShaderType::VertexShader });
+	
+	auto ps = device.compileShader({ shaderFileFPath, shaderSourceCode, shaderSourceCodeSize, "PSMain", ShaderType::PixelShader });
+
+	auto vsSignature = device.createVertexShaderSignature ({ vs });
+
+	m_pipeline = device.createGraphicsPipelineState({ *vsSignature, *ps });
+
+	const Vertex vertexList[] =
+	{
+		//Quad Rainbow
+		{ {-0.5f, -0.5f, 0.0f}, {1, 0, 0, 1} },
+		{ {-0.5f, 0.5f, 0.0f}, {0, 1, 0, 1} },
+		{ {0.5f, 0.5f, 0.0f}, {0, 0, 1, 1} },
+
+		{ {0.5f, 0.5f, 0.0f}, {0, 0, 1, 1} },
+		{ {0.5f, -0.5f, 0.0f}, {1, 0, 1, 1} },
+		{ {-0.5f, -0.5f, 0.0f}, {1, 0, 0, 1} }
+
+		//Triangle Rainbow
+		//{ {-0.5f, -0.5f, 0.0f}, {1, 0, 0, 1} },
+		//{ {0.0f, 0.5f, 0.0f}, {0, 1, 0, 1} },
+		//{ {0.5f, -0.5f, 0.0f}, {0, 0, 1, 1} }
+
+		//Quad Green
+		//{ {-0.5f, -0.5f, 0.0f}, {0, 1, 0, 1} },
+		//{ {-0.5f, 0.5f, 0.0f}, {0, 1, 0, 1} },
+		//{ {0.5f, 0.5f, 0.0f}, {0, 1, 0, 1} },
+
+		//{ {0.5f, 0.5f, 0.0f}, {0, 1, 0, 1} },
+		//{ {0.5f, -0.5f, 0.0f}, {0, 1, 0, 1} },
+		//{ {-0.5f, -0.5f, 0.0f}, {0, 1, 0, 1} }
+
 	};
 
-	m_vb = device.createVertexBuffer({vertexList, std::size(vertexList), sizeof(Vec3)});
+	m_vb = device.createVertexBuffer({vertexList, std::size(vertexList), sizeof(Vertex)});
 }
 
 dx3d::GraphicsEngine::~GraphicsEngine()
@@ -55,7 +77,7 @@ dx3d::GraphicsDevice& dx3d::GraphicsEngine::getGraphicsDevice() noexcept
 void dx3d::GraphicsEngine::render(SwapChain& swapChain)
 {
 	auto& context = *m_deviceContext;
-	context.clearAndSetBackBuffer(swapChain, { 0.22, 0.73, 0.73, 1 }); //change the second parameter to change the color of the back buffer.
+	context.clearAndSetBackBuffer(swapChain, { 0.22f, 0.73f, 0.73f, 1.0f }); //change the second parameter to change the color of the back buffer.
 	context.setGraphicsPipelineState(*m_pipeline);
 
 	context.setViewportSize(swapChain.getSize());
