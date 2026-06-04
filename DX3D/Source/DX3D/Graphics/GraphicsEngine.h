@@ -29,7 +29,6 @@ namespace dx3d
 			VertexBufferPtr m_vb{};
 
 			//RayMarcher
-			std::shared_ptr<ShaderBinary> m_rayMarcherShaderBinary{};
-			GraphicsPipelineStatePtr m_rayMarcherPipeline{};
+			std::unique_ptr<RayMarcher> m_rayMarcher{};
 	};
 }
