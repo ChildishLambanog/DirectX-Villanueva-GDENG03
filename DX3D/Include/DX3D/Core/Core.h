@@ -19,6 +19,7 @@ namespace dx3d
 	class GraphicsPipelineState;
 	class VertexBuffer;
 	class VertexShaderSignature;
+	class QuadMesh;
 
 	using i32 = int;
 	using ui32 = unsigned int;

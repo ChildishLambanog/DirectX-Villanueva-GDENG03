@@ -3,6 +3,7 @@
 #include <DX3D/Core/Base.h>
 #include <DX3D/Math/Vec3.h>
 #include <DX3D/Math/Vec4.h>
+#include <vector>
 
 namespace dx3d
 {
@@ -15,7 +16,7 @@ namespace dx3d
 			GraphicsDevice& getGraphicsDevice() noexcept;
 
 			void render(SwapChain& swapChain);
-		private:
+			
 			struct Vertex
 			{
 				Vec3 position;
@@ -26,6 +27,7 @@ namespace dx3d
 			std::shared_ptr<GraphicsDevice> m_graphicsDevice{};
 			DeviceContextPtr m_deviceContext{};
 			GraphicsPipelineStatePtr m_pipeline{};
-			VertexBufferPtr m_vb{};
+
+			std::vector<std::unique_ptr<QuadMesh>> m_quadMesh{};
 	};
 }
