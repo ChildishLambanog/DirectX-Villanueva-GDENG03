@@ -1,9 +1,11 @@
 #pragma once
+#include <DX3D/Core/Core.h>
 
 namespace dx3d
 {
 	class Logger final
 	{
+		dx3d_disable_copy_and_move(Logger)
 		public:
 			enum class LogLevel
 			{
@@ -15,12 +17,6 @@ namespace dx3d
 			explicit Logger(LogLevel logLevel = LogLevel::Error);
 			~Logger();
 			void log(LogLevel level, const char* message);
-
-		protected:
-			Logger(const Logger&) = delete;
-			Logger(Logger&&) = delete;
-			Logger& operator = (const Logger&) = delete;
-			Logger& operator = (Logger&&) = delete;
 		private:
 			LogLevel m_logLevel = LogLevel::Error;
 	};
@@ -34,3 +30,20 @@ namespace dx3d
 	DX3DLog(logger, type, message);\
 	throw exception(message);\
 	}
+
+
+#define DX3DLogInfo(message)\
+		DX3DLog(getLogger(), Logger::LogLevel::Info, message)
+
+#define DX3DLogWarning(message)\
+		DX3DLog(getLogger(), Logger::LogLevel::Warning, message)
+
+#define DX3DLogError(message)\
+		DX3DLog(getLogger(), Logger::LogLevel::Error, message)
+
+//macro to log an error message and throw a runtime error with the same message
+#define DX3DLogThrowError(message)\
+		DX3DLogThrow(getLogger(), std::runtime_error, Logger::LogLevel::Error, message)
+
+#define DX3DLogThrowInvalidArgument(message)\
+		DX3DLogThrow(getLogger(), std::invalid_argument, Logger::LogLevel::Error, message)
