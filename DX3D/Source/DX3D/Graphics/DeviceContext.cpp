@@ -6,8 +6,7 @@
 
 dx3d::DeviceContext::DeviceContext(const GraphicsResourceDesc& gDesc): GraphicsResource(gDesc)
 {
-	DX3DGraphicsLogThrowOnFail(m_device.CreateDeferredContext(0, &m_context),
-		"CreateDeferredContext has failed!");
+	DX3DGraphicsLogThrowOnFail(m_device.CreateDeferredContext(0, &m_context), "CreateDeferredContext has failed!");
 }
 
 void dx3d::DeviceContext::clearAndSetBackBuffer(const SwapChain& swapChain, const Vec4& color)
@@ -53,7 +52,7 @@ void dx3d::DeviceContext::setConstantBuffer(const ConstantBuffer& buffer)
 
 void dx3d::DeviceContext::updateConstantBuffer(const ConstantBuffer& buffer, const void* data)
 {
-	if (!data) DX3DLogThrowError("Null data pointer passed to updateConstantBuffer.");
+	if (!data) DX3DLogThrowInvalidArgument("Null data pointer passed to updateConstantBuffer.");
 
 	auto buf = buffer.m_buffer.Get();
 	D3D11_MAPPED_SUBRESOURCE mapped{};
