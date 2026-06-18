@@ -25,6 +25,7 @@ namespace dx3d
 			struct alignas(16) ConstantData
 			{
 				Mat4x4 world{};
+				Mat4x4 proj{};
 			};
 
 		private:
@@ -33,7 +34,8 @@ namespace dx3d
 			RefPtr<GraphicsPipelineState> m_pipeline{};
 			RefPtr<VertexBuffer> m_vb{};
 			RefPtr<ConstantBuffer> m_cb{};
+			RefPtr<IndexBuffer> m_ib{};
 
-			f32 m_rot{}, m_scale{}, m_pos{ -1.0f };
+			f32 m_rot{}, m_scale{}, m_pos{ 0.0f };
 	};
 }

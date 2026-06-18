@@ -1,6 +1,7 @@
 #pragma once
 #include <DX3D/Core/Core.h>
 #include <cmath>
+#include <cassert>
 
 namespace dx3d
 {
@@ -38,6 +39,30 @@ namespace dx3d
 				return res;
 			}
 
+			static Mat4x4 rotateX(f32 x) noexcept
+			{
+				Mat4x4 res{};
+				res.m_data[0][0] = 1;
+				res.m_data[1][1] = std::cos(x);
+				res.m_data[1][2] = std::sin(x);
+				res.m_data[2][1] = -std::sin(x);
+				res.m_data[2][2] = std::cos(x);
+				res.m_data[3][3] = 1;
+				return res;
+			}
+
+			static Mat4x4 rotateY(f32 y) noexcept
+			{
+				Mat4x4 res{};
+				res.m_data[0][0] = std::cos(y);
+				res.m_data[1][1] = 1;
+				res.m_data[0][2] = -std::sin(y);
+				res.m_data[2][0] = std::sin(y);
+				res.m_data[2][2] = std::cos(y);
+				res.m_data[3][3] = 1;
+				return res;
+			}
+
 			static Mat4x4 rotateZ(f32 z) noexcept
 			{
 				Mat4x4 res{};
@@ -47,6 +72,21 @@ namespace dx3d
 				res.m_data[1][1] = std::cos(z);
 				res.m_data[2][2] = 1.0f;
 				res.m_data[3][3] = 1.0f;
+				return res;
+			}
+
+			static Mat4x4 orthoLH(f32 width, f32 height, f32 zNear, f32 zFar) noexcept
+			{
+				assert(width != 0.0f && "OrthoLH: width must not be zero");
+				assert(height != 0.0f && "OrthoLH: height must not be zero");
+				assert(zFar != zNear && "OrthoLH: zNear and zFar cannot be equal");
+
+				Mat4x4 res{};
+				res.m_data[0][0] = 2.0f / width;
+				res.m_data[1][1] = 2.0f / height;
+				res.m_data[2][2] = 1.0f / (zFar - zNear);
+				res.m_data[3][2] = -(zNear / (zFar - zNear));
+				res.m_data[3][3] = 1;
 				return res;
 			}
 
