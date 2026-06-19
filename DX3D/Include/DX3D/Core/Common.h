@@ -112,4 +112,10 @@ namespace dx3d
 		GameObject& object;
 		World& world;
 	};
+
+	struct WorldRendererDesc
+	{
+		BaseDesc base;
+		GraphicsDevice& engine;
+	};
 }
