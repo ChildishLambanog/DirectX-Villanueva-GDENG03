@@ -30,15 +30,29 @@ dx3d::Rect dx3d::SwapChain::getSize() const noexcept
 
 void dx3d::SwapChain::present(bool vsync)
 {
-	DX3DGraphicsLogThrowOnFail(m_swapChain->Present(vsync, 0),
-		"Present has failed!");
+	auto hr = m_swapChain->Present(vsync, 0);
+	if (FAILED(hr))
+	{
+		DX3DLogError("Present failed.");
+		return;
+	}
 }
 
 void dx3d::SwapChain::reloadBuffers()
 {
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> buffer{};
-	DX3DGraphicsLogThrowOnFail(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&buffer)),
-		"GetBuffer has failed!");
-	DX3DGraphicsLogThrowOnFail(m_device.CreateRenderTargetView(buffer.Get(), nullptr, &m_rtv),
-		"CreateRenderTargetView has failed!");
+	DX3DGraphicsLogThrowOnFail(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&buffer)), "GetBuffer has failed!");
+	DX3DGraphicsLogThrowOnFail(m_device.CreateRenderTargetView(buffer.Get(), nullptr, &m_rtv), "CreateRenderTargetView has failed!");
+
+	D3D11_TEXTURE2D_DESC depthTexDesc = {};
+	depthTexDesc.Width = std::max(1, m_size.width);
+	depthTexDesc.Height = std::max(1, m_size.height);
+	depthTexDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthTexDesc.MipLevels = 1;
+	depthTexDesc.SampleDesc.Count = 1;
+	depthTexDesc.ArraySize = 1;
+
+	DX3DGraphicsLogThrowOnFail(m_device.CreateTexture2D(&depthTexDesc, nullptr, &buffer), "CreateTexture2D has failed.");
+	DX3DGraphicsLogThrowOnFail(m_device.CreateDepthStencilView(buffer.Get(), NULL, &m_dsv), "CreateDepthStencilView has failed.");
 }

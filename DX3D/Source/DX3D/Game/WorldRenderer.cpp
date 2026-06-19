@@ -11,6 +11,7 @@
 
 #include <DX3D/Component/TransformComponent.h>
 #include <DX3D/Component/CubeComponent.h>
+#include <DX3D/Component/CameraComponent.h>
 
 #include <DX3D/Math/Vec3.h>
 #include <fstream>
@@ -91,32 +92,35 @@ dx3d::WorldRenderer::~WorldRenderer()
 void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 deltaTime)
 {
 	auto size = swapChain.getSize();
-	auto aspect = static_cast<f32>(size.width) / size.height;
-	auto unitsPerScreenHeight = 5.0f;
-	auto viewHeight = unitsPerScreenHeight;
-	auto viewWidth = unitsPerScreenHeight * aspect;
 
 	auto& context = *m_deviceContext;
 	context.clearAndSetBackBuffer(swapChain, { 0.22f, 0.73f, 0.73f, 1.0f }); //change the second parameter to change the color of the back buffer.
 	context.setGraphicsPipelineState(*m_pipeline);
-
 	context.setViewportSize(size);
 
 	auto numComponents = 0u;
-	auto components = world.getComponents<CubeComponent>(numComponents);
+
 	ConstantData data{};
+	{
+		auto components = world.getComponents<CameraComponent>(numComponents);
+		for (auto i : std::views::iota(0u, numComponents))
+		{
+			auto component = components[i];
+			data.view = component->getViewMatrix();
+			component->setViewportSize(size);
+			data.proj = component->getProjectionMatrix();
+			break;
+		}
+	}
+
+	auto components = world.getComponents<CubeComponent>(numComponents);
 
 	for (auto i : std::views::iota(0u, numComponents))
 	{
 		auto component = components[i];
 		auto& transform = component->getGameObject().getTransform();
 
-		data =
-			ConstantData
-		{
-			transform.getWorldMatrix(),
-			Mat4x4::orthoLH(viewWidth, viewHeight, -10.0f, 10.0f)
-		};
+		data.world = transform.getAffineWorldMatrix();
 
 		auto& cb = *m_cb;
 		context.updateConstantBuffer(cb, &data);
