@@ -14,6 +14,7 @@ namespace dx3d
 
 			virtual World& getWorld() noexcept final;
 			virtual Logger& getLogger() noexcept final;
+			virtual InputSystem& getInputSystem() noexcept final;
 			virtual void run() final;
 		protected:
 			virtual void onCreate() {}
@@ -22,6 +23,7 @@ namespace dx3d
 			void onInternalUpdate();
 		private:
 			UniquePtr<Logger> m_loggerPtr{};
+			UniquePtr<InputSystem> m_inputSystemPtr{};
 			RefPtr<GraphicsDevice> m_graphicsDevice{};
 			UniquePtr<Display> m_display{};
 			UniquePtr<World> m_world{};
