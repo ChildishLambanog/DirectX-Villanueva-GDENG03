@@ -3,7 +3,7 @@
 #include<DX3D/Component/TransformComponent.h>
 #include<DX3D/Game/World.h>
 
-dx3d::GameObject::GameObject(const GameObjectDesc& desc) : Identifiable(desc.base), m_world(desc.world)
+dx3d::GameObject::GameObject(const GameObjectDesc& desc) : Identifiable(desc.base), m_world(desc.world), m_gameContext(desc.gameContext)
 {
 	m_transform = createOrGetComponent<TransformComponent>();
 }
@@ -11,6 +11,16 @@ dx3d::GameObject::GameObject(const GameObjectDesc& desc) : Identifiable(desc.bas
 dx3d::TransformComponent& dx3d::GameObject::getTransform() noexcept
 {
 	return *m_transform;
+}
+
+dx3d::World& dx3d::GameObject::getWorld() noexcept
+{
+	return m_world;
+}
+
+dx3d::InputSystem& dx3d::GameObject::getInputSystem() noexcept
+{
+	return m_gameContext.input;
 }
 
 dx3d::Component* dx3d::GameObject::createComponentInternal(UniquePtr<Component>& component)
