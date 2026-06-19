@@ -3,6 +3,8 @@
 #include <DX3D/Graphics/GraphicsEngine.h>
 #include <DX3D/Core/Logger.h>
 #include <DX3D/Game/Display.h>
+#include <DX3D/Game/World.h>
+#include <DX3D/Game/GameObject.h>
 
 dx3d::Game::Game(const GameDesc& desc)
 {
@@ -13,6 +15,7 @@ dx3d::Game::Game(const GameDesc& desc)
 
 	m_graphicsEngine = std::make_unique<GraphicsEngine>(GraphicsEngineDesc{ *m_loggerPtr });
 	m_display = std::make_unique<Display>(DisplayDesc{ {*m_loggerPtr, desc.windowSize}, m_graphicsEngine->getGraphicsDevice() });
+	m_world = std::make_unique<World>(WorldDesc{ {*m_loggerPtr} });
 
 	DX3DLogInfo("Game is initialized successfully.");
 }
@@ -20,6 +23,11 @@ dx3d::Game::Game(const GameDesc& desc)
 dx3d::Game::~Game()
 {
 	DX3DLogInfo("Game memory deallocation started. Will shutdown");
+}
+
+dx3d::World& dx3d::Game::getWorld() noexcept
+{
+	return *m_world;
 }
 
 dx3d::Logger& dx3d::Game::getLogger() noexcept
@@ -34,6 +42,8 @@ void dx3d::Game::onInternalUpdate()
 	m_previousTime = currentTime;
 	auto deltaTime = delta.count();
 
+	onUpdate(deltaTime);
+	m_world->update(deltaTime);
 
 	m_graphicsEngine->render(m_display->getSwapChain(), deltaTime);
 }
