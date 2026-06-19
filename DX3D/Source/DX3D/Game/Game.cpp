@@ -1,10 +1,11 @@
 #include <DX3D/Game/Game.h>
 #include <DX3D/Window/Window.h>
-#include <DX3D/Graphics/GraphicsEngine.h>
+#include <DX3D/Graphics/GraphicsDevice.h>
 #include <DX3D/Core/Logger.h>
 #include <DX3D/Game/Display.h>
 #include <DX3D/Game/World.h>
 #include <DX3D/Game/GameObject.h>
+#include <DX3D/Game/WorldRenderer.h>
 
 dx3d::Game::Game(const GameDesc& desc)
 {
@@ -13,9 +14,10 @@ dx3d::Game::Game(const GameDesc& desc)
 	DX3DLogInfo("Rafael Ira R. Villanueva DirectX 3D Engine GDENG03");
 	DX3DLogInfo("--------------------------------------------------");
 
-	m_graphicsEngine = std::make_unique<GraphicsEngine>(GraphicsEngineDesc{ *m_loggerPtr });
-	m_display = std::make_unique<Display>(DisplayDesc{ {*m_loggerPtr, desc.windowSize}, m_graphicsEngine->getGraphicsDevice() });
+	m_graphicsDevice = std::make_shared<GraphicsDevice>(GraphicsDeviceDesc{ *m_loggerPtr });
+	m_display = std::make_unique<Display>(DisplayDesc{ {*m_loggerPtr,desc.windowSize},*m_graphicsDevice });
 	m_world = std::make_unique<World>(WorldDesc{ {*m_loggerPtr} });
+	m_worldRenderer = std::make_unique<WorldRenderer>(WorldRendererDesc{ {*m_loggerPtr},*m_graphicsDevice });
 
 	DX3DLogInfo("Game is initialized successfully.");
 }
@@ -45,5 +47,5 @@ void dx3d::Game::onInternalUpdate()
 	onUpdate(deltaTime);
 	m_world->update(deltaTime);
 
-	m_graphicsEngine->render(m_display->getSwapChain(), deltaTime);
+	m_worldRenderer->render(*m_world, m_display->getSwapChain(), deltaTime);
 }
