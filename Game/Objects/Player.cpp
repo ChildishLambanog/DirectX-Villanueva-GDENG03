@@ -15,7 +15,6 @@ void Player::onUpdate(dx3d::f32 deltaTime)
 {
 	auto& input = getInputSystem();
 
-
 	auto sensitivity = 0.001f;
 	auto rot = getTransform().getRotation();
 	rot.x += getInputSystem().getMouseDelta().y * sensitivity;

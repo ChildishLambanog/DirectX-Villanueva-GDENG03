@@ -1,5 +1,6 @@
 #pragma once
 #include <DX3D/All.h>
+#include <DX3D/Component/Mesh.h>
 
 class MainGame : public dx3d::Game
 {
@@ -11,6 +12,7 @@ class MainGame : public dx3d::Game
 		virtual void onUpdate(dx3d::f32 deltaTime);
 
 	private:
-		dx3d::GameObject* m_player{};
-		dx3d::f32 m_rot{}, m_scale{};
+		dx3d::Mesh m_cubeMesh;
+		dx3d::Mesh m_sphereMesh;
+		bool m_isInitialized{ false };
 };

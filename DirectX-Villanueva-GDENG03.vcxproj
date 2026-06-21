@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="DX3D\Source\DX3D\Component\CameraComponent.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Component\CubeComponent.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Component\MeshGenerator.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Component\TransformComponent.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Game\Component.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Game\GameObject.cpp" />
@@ -173,10 +174,13 @@
     <ClCompile Include="DX3D\Source\DX3D\Graphics\IndexBuffer.cpp" />
     <ClCompile Include="Game\MainGame.cpp" />
     <ClCompile Include="Game\Objects\Player.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Component\SphereComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX3D\Include\DX3D\Component\CameraComponent.h" />
     <ClInclude Include="DX3D\Include\DX3D\Component\CubeComponent.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Component\Mesh.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Component\MeshGenerator.h" />
     <ClInclude Include="DX3D\Include\DX3D\Component\TransformComponent.h" />
     <ClInclude Include="DX3D\Include\DX3D\Core\Identifiable.h" />
     <ClInclude Include="DX3D\Include\DX3D\Game\Component.h" />
@@ -212,6 +216,7 @@
     <ClInclude Include="Game\MainGame.h" />
     <ClInclude Include="DX3D\Include\DX3D\Math\MathUtils.h" />
     <ClInclude Include="Game\Objects\Player.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Component\SphereComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

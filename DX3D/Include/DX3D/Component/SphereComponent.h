@@ -5,11 +5,11 @@
 
 namespace dx3d
 {
-    class CubeComponent final : public Component
+    class SphereComponent final : public Component
     {
-        dx3d_typeid(CubeComponent)
+        dx3d_typeid(SphereComponent)
         public:
-            explicit CubeComponent(const ComponentDesc& data);
+            explicit SphereComponent(const ComponentDesc& data);
 
             void setMesh(const Mesh* mesh) noexcept { m_mesh = mesh; }
             const Mesh* getMesh() const noexcept { return m_mesh; }
