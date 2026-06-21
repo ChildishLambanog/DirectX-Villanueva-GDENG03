@@ -2,18 +2,18 @@
 #include <DX3D/Graphics/GraphicsDevice.h>
 #include <DX3D/Graphics/DeviceContext.h>
 #include <DX3D/Graphics/SwapChain.h>
-#include <DX3D/Graphics/VertexBuffer.h>
-#include <DX3D/Graphics/IndexBuffer.h>
+//#include <DX3D/Graphics/VertexBuffer.h>
+//#include <DX3D/Graphics/IndexBuffer.h>
 
 #include <DX3D/Game/World.h>
-#include <DX3D/Game/Component.h>
+//#include <DX3D/Game/Component.h>
 #include <DX3D/Game/GameObject.h>
 
 #include <DX3D/Component/TransformComponent.h>
 #include <DX3D/Component/CubeComponent.h>
+#include <DX3D/Component/SphereComponent.h>
 #include <DX3D/Component/CameraComponent.h>
 
-#include <DX3D/Math/Vec3.h>
 #include <fstream>
 #include <ranges>
 
@@ -36,52 +36,11 @@ dx3d::WorldRenderer::WorldRenderer(const WorldRendererDesc& desc) : Base(desc.ba
 	auto shaderSourceCodeSize = shaderFileData.length();
 
 	auto vs = device.compileShader({ shaderFileFPath, shaderSourceCode, shaderSourceCodeSize, "VSMain", ShaderType::VertexShader });
-	
 	auto ps = device.compileShader({ shaderFileFPath, shaderSourceCode, shaderSourceCodeSize, "PSMain", ShaderType::PixelShader });
-
 	auto vsSignature = device.createVertexShaderSignature ({ vs });
 
 	m_pipeline = device.createGraphicsPipelineState({ *vsSignature, *ps });
-
-	const Vertex vertexList[] =
-	{
-		{{-0.5f,-0.5f,-0.5f}, {1,0,0,1}},
-		{{-0.5f,0.5f,-0.5f}, {0,1,0,1} },
-		{{0.5f,0.5f,-0.5f},  {0,0,1,1}},
-		{{0.5f,-0.5f,-0.5f}, {1,0,1,1}},
-
-		{{0.5f,-0.5f,0.5f}, {1,0,1,1}},
-		{{0.5f,0.5f,0.5f}, {0,0,1,1}},
-		{{-0.5f,0.5f,0.5f}, {0,1,0,1}},
-		{{-0.5f,-0.5f,0.5f}, {1,0,0,1}}
-	};
-
-	const ui32 indexList[] =
-	{
-		//winding order: clockwise
-		//front face indices
-		0,1,2,  //first triangle
-		2,3,0,  //second triangle
-		//back face indices
-		4,5,6,
-		6,7,4,
-		//top face indices
-		1,6,5,
-		5,2,1,
-		//bottom face indices
-		7,0,3,
-		3,4,7,
-		//right face indices
-		3,2,5,
-		5,4,3,
-		//left face indices
-		7,6,1,
-		1,0,7
-	};
-
-	m_vb = device.createVertexBuffer({vertexList, std::size(vertexList), sizeof(Vertex)});
 	m_cb = device.createConstantBuffer({ {}, sizeof(ConstantData) });
-	m_ib = device.createIndexBuffer({ indexList, std::size(indexList) });
 }
 
 dx3d::WorldRenderer::~WorldRenderer()
@@ -92,15 +51,15 @@ dx3d::WorldRenderer::~WorldRenderer()
 void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 deltaTime)
 {
 	auto size = swapChain.getSize();
-
 	auto& context = *m_deviceContext;
+
 	context.clearAndSetBackBuffer(swapChain, { 0.22f, 0.73f, 0.73f, 1.0f }); //change the second parameter to change the color of the back buffer.
 	context.setGraphicsPipelineState(*m_pipeline);
 	context.setViewportSize(size);
 
 	auto numComponents = 0u;
-
 	ConstantData data{};
+	
 	{
 		auto components = world.getComponents<CameraComponent>(numComponents);
 		for (auto i : std::views::iota(0u, numComponents))
@@ -113,24 +72,40 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 		}
 	}
 
-	auto components = world.getComponents<CubeComponent>(numComponents);
-
-	for (auto i : std::views::iota(0u, numComponents))
+	//Cubes
+	auto numCubes = 0u;
+	auto cubes = world.getComponents<CubeComponent>(numCubes);
+	for (auto i : std::views::iota(0u, numCubes))
 	{
-		auto component = components[i];
-		auto& transform = component->getGameObject().getTransform();
+		auto* comp = cubes[i];
+		const Mesh* mesh = comp->getMesh();
+		if (!mesh) continue;
 
-		data.world = transform.getAffineWorldMatrix();
+		data.world = comp->getGameObject().getTransform().getAffineWorldMatrix();
+		context.updateConstantBuffer(*m_cb, &data);
 
-		auto& cb = *m_cb;
-		context.updateConstantBuffer(cb, &data);
+		context.setVertexBuffer(*(mesh->vb));
+		context.setConstantBuffer(*m_cb);
+		context.setIndexBuffer(*(mesh->ib));
+		context.drawIndexedTriangleList(mesh->indexCount, 0u, 0u);
+	}
 
-		auto& vb = *m_vb;
-		auto& ib = *m_ib;
-		context.setVertexBuffer(vb);
-		context.setConstantBuffer(cb);
-		context.setIndexBuffer(ib);
-		context.drawIndexedTriangleList(ib.getIndexListSize(), 0u, 0u);
+	//Spheres
+	auto numSpheres = 0u;
+	auto spheres = world.getComponents<SphereComponent>(numSpheres);
+	for (auto i : std::views::iota(0u, numSpheres))
+	{
+		auto* comp = spheres[i];
+		const Mesh* mesh = comp->getMesh();
+		if (!mesh) continue;
+
+		data.world = comp->getGameObject().getTransform().getAffineWorldMatrix();
+		context.updateConstantBuffer(*m_cb, &data);
+
+		context.setVertexBuffer(*(mesh->vb));
+		context.setConstantBuffer(*m_cb);
+		context.setIndexBuffer(*(mesh->ib));
+		context.drawIndexedTriangleList(mesh->indexCount, 0u, 0u);
 	}
 
 	m_graphicsDevice.executeCommandList(context);

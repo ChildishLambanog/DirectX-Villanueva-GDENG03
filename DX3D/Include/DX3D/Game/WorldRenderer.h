@@ -15,11 +15,11 @@ namespace dx3d
 		
 			void render(const World& world, SwapChain& swapChain, f32 deltaTime);
 		private:
-			struct Vertex
-			{
-				Vec3 position;
-				Vec4 color;
-			};
+			//struct Vertex
+			//{
+			//	Vec3 position;
+			//	Vec4 color;
+			//};
 			struct alignas(16) ConstantData
 			{
 				Mat4x4 world{};
@@ -31,8 +31,8 @@ namespace dx3d
 			GraphicsDevice& m_graphicsDevice;
 			RefPtr<DeviceContext> m_deviceContext{};
 			RefPtr<GraphicsPipelineState> m_pipeline{};
-			RefPtr<VertexBuffer> m_vb{};
+			/*RefPtr<VertexBuffer> m_vb{};*/
 			RefPtr<ConstantBuffer> m_cb{};
-			RefPtr<IndexBuffer> m_ib{};
+			/*RefPtr<IndexBuffer> m_ib{};*/
 	};
 }
