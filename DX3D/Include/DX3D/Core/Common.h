@@ -151,6 +151,8 @@ namespace dx3d
 		Shift,
 		Space,
 		Enter,
+		Backspace,
+		Delete,
 
 		//Mouse buttons (optional inclusion)
 		MouseLeft,

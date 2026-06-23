@@ -38,9 +38,11 @@ namespace dx3d
 		protected:
 			virtual void onCreate() {}
 			virtual void onUpdate(f32 deltaTime) {}
+			virtual void onDestroy() {}
 		private:
 			Component* createComponentInternal(UniquePtr<Component>& component);
 			Component* getComponentInternal(size_t id);
+			const std::unordered_map<size_t, UniquePtr<Component>>& getComponentsInternalMap() const noexcept { return m_components; }
 		private:
 			std::unordered_map<size_t, UniquePtr<Component>> m_components{};
 			TransformComponent* m_transform{};

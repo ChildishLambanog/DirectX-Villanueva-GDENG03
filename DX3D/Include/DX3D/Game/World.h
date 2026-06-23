@@ -30,6 +30,7 @@ namespace dx3d
 			}
 			
 			void update(f32 deltaTime);
+			void destroyGameObject(GameObject& object);
 		private:
 			GameObject* createGameObjectInternal(UniquePtr<GameObject>& object);
 			void addComponentInternal(Component& component);
@@ -38,7 +39,8 @@ namespace dx3d
 		private:
 			enum class EventType
 			{
-				Create = 0
+				Create = 0,
+				Destroy = 1
 			};
 			struct GameObjectEvent
 			{
@@ -58,6 +60,8 @@ namespace dx3d
 
 			std::vector<GameObjectEvent> m_events{};
 			std::vector<GameObjectEvent> m_eventsSwapBuffer{};
+
+			std::vector<UniquePtr<GameObject>> m_garbageObjects{};
 
 			friend class GameObject;
 			friend class TransformComponent;

@@ -147,6 +147,8 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DX3D\Source\DX3D\Component\BouncingSphere.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Input\CommandManager.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Component\CameraComponent.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Component\CubeComponent.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Component\MeshGenerator.cpp" />
@@ -160,6 +162,7 @@
     <ClCompile Include="DX3D\Source\DX3D\Core\Base.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Game\Game.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Game\Win32\Win32Game.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Input\InputListener.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Input\InputSystem.cpp" />
     <ClCompile Include="Game\main.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Window\Win32\Win32Window.cpp" />
@@ -177,6 +180,8 @@
     <ClCompile Include="DX3D\Source\DX3D\Component\SphereComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DX3D\Include\DX3D\Component\BouncingSphere.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Input\CommandManager.h" />
     <ClInclude Include="DX3D\Include\DX3D\Component\CameraComponent.h" />
     <ClInclude Include="DX3D\Include\DX3D\Component\CubeComponent.h" />
     <ClInclude Include="DX3D\Include\DX3D\Component\Mesh.h" />
@@ -186,6 +191,9 @@
     <ClInclude Include="DX3D\Include\DX3D\Game\Component.h" />
     <ClInclude Include="DX3D\Include\DX3D\Game\GameObject.h" />
     <ClInclude Include="DX3D\Include\DX3D\Game\World.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Input\Command.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Input\GameCommands.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Input\InputListener.h" />
     <ClInclude Include="DX3D\Include\DX3D\Input\InputSystem.h" />
     <ClInclude Include="DX3D\Include\DX3D\Math\Mat4x4.h" />
     <ClInclude Include="DX3D\Include\DX3D\Math\Vec2.h" />

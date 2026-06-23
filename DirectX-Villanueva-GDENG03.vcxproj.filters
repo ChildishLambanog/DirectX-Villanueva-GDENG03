@@ -99,6 +99,15 @@
     <ClCompile Include="DX3D\Source\DX3D\Component\MeshGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DX3D\Source\DX3D\Input\CommandManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DX3D\Source\DX3D\Component\BouncingSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DX3D\Source\DX3D\Input\InputListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX3D\Include\DX3D\Core\Base.h">
@@ -219,6 +228,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DX3D\Include\DX3D\Component\MeshGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DX3D\Include\DX3D\Input\Command.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DX3D\Include\DX3D\Input\CommandManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DX3D\Include\DX3D\Input\GameCommands.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DX3D\Include\DX3D\Component\BouncingSphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DX3D\Include\DX3D\Input\InputListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
