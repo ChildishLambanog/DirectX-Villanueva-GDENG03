@@ -15,7 +15,7 @@ namespace dx3d
 
     private:
         Vec3 m_velocity{ 0.0f, 0.0f, 0.0f };
-        float m_speed{ 2.5f }; //Speed in pixels per second
+        float m_speed{ 100.5f }; //Speed in pixels per second
     };
 }
 

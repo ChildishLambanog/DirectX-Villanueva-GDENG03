@@ -10,96 +10,95 @@ namespace dx3d
     //Command for spawning a single sphere with bounce and undoing that spawn
     class SpawnSphereCommand final : public Command
     {
-    public:
-        SpawnSphereCommand(World& world, const Mesh* sphereMesh, std::vector<GameObject*>& registry)
-            : m_world(world), m_sphereMesh(sphereMesh), m_sphereRegistry(registry) {}
+        public:
+            SpawnSphereCommand(World& world, const Mesh* sphereMesh, std::vector<GameObject*>& registry)
+                : m_world(world), m_sphereMesh(sphereMesh), m_sphereRegistry(registry) {}
 
-        virtual void execute() override
-        {
-            std::cout << "Sphere has been spawned \n";
-
-            m_spawnedObject = m_world.createGameObject<GameObject>(); //Create a new GameObject to represent the sphere in the world
-            m_spawnedObject->createOrGetComponent<BouncingSphere>(); //Add the bouncing sphere component to give it movement behavior
-
-            auto* comp = m_spawnedObject->createOrGetComponent<SphereComponent>(); //Add the sphere component which will handle rendering the sphere mesh
-            if (m_sphereMesh) comp->setMesh(m_sphereMesh);
-
-            m_sphereRegistry.push_back(m_spawnedObject); //Add the spawned sphere to the registry for tracking and management
-        }
-
-        virtual void undo() override
-        {
-            if (!m_spawnedObject) return;
-
-            //Logic to remove the sphere by removing it from the registry and marking it for destruction in the World
-            auto it = std::find(m_sphereRegistry.begin(), m_sphereRegistry.end(), m_spawnedObject);
-            while (it != m_sphereRegistry.end())
+            virtual void execute() override
             {
-                m_sphereRegistry.erase(it);
-                it = std::find(m_sphereRegistry.begin(), m_sphereRegistry.end(), m_spawnedObject);
+                std::cout << "Sphere has been spawned \n";
+
+                m_spawnedObject = m_world.createGameObject<GameObject>(); //Create a new GameObject to represent the sphere in the world
+                m_spawnedObject->createOrGetComponent<BouncingSphere>(); //Add the bouncing sphere component to give it movement behavior
+
+                auto* comp = m_spawnedObject->createOrGetComponent<SphereComponent>(); //Add the sphere component which will handle rendering the sphere mesh
+                if (m_sphereMesh) comp->setMesh(m_sphereMesh);
+                m_spawnedObject->getTransform().setPosition({ 0.0f, 0.0f, 0.0f });
+
+                m_sphereRegistry.push_back(m_spawnedObject); //Add the spawned sphere to the registry for tracking
             }
 
-            //Pass the object to the world for destruction, which will handle cleanup and deallocation
-            m_world.destroyGameObject(*m_spawnedObject);
+            virtual void undo() override
+            {
+                if (!m_spawnedObject) return;
 
-            //Set it to nullptr to avoid dangling references in case of multiple undos
-            m_spawnedObject = nullptr;
-        }
+                //Remove the sphere by removing it from the registry and marking it for destruction
+                auto it = std::find(m_sphereRegistry.begin(), m_sphereRegistry.end(), m_spawnedObject);
+                while (it != m_sphereRegistry.end())
+                {
+                    m_sphereRegistry.erase(it);
+                    it = std::find(m_sphereRegistry.begin(), m_sphereRegistry.end(), m_spawnedObject);
+                }
 
-    private:
-        World& m_world;
-        const Mesh* m_sphereMesh;
-        std::vector<GameObject*>& m_sphereRegistry;
-        GameObject* m_spawnedObject{ nullptr };
+                //Pass the object to the world for destruction, which will handle cleanup and deallocation
+                m_world.destroyGameObject(*m_spawnedObject);
+
+                //Set to nullptr to avoid dangling references in case of multiple undos
+                m_spawnedObject = nullptr;
+            }
+
+        private:
+            World& m_world;
+            const Mesh* m_sphereMesh;
+            std::vector<GameObject*>& m_sphereRegistry;
+            GameObject* m_spawnedObject{ nullptr };
     };
 
     class ClearAllSpheresCommand final : public Command
     {
-    public:
-        // Pass references to the registry AND the manager's undo stack history track
-        explicit ClearAllSpheresCommand(std::vector<GameObject*>& registry, std::deque<std::shared_ptr<Command>>& undoStack)
-            : m_sphereRegistry(registry), m_undoStackRef(undoStack) {}
+        public:
+            explicit ClearAllSpheresCommand(std::vector<GameObject*>& registry, std::deque<std::shared_ptr<Command>>& undoStack)
+                : m_sphereRegistry(registry), m_undoStackRef(undoStack) {}
 
-        virtual void execute() override
-        {
-            m_capturedSpawnCommands.clear();
-
-            // 1. Move all the SpawnSphereCommands from the manager's undo stack into this command!
-            // We loop backwards through history to grab them.
-            auto it = m_undoStackRef.begin();
-            while (it != m_undoStackRef.end())
+            virtual void execute() override
             {
-                // We verify that the command in history is actually a sphere spawning action
-                if (auto spawnCmd = std::dynamic_pointer_cast<SpawnSphereCommand>(*it))
+				m_capturedSpawnCommands.clear(); //Clear any previously captured commands
+
+                //Move the SpawnSphere Commands from the undo stack into the local vector for this command to manage and call undo safely without affecting 
+                //the main undo stack's integrity.
+                auto it = m_undoStackRef.begin();
+                while (it != m_undoStackRef.end())
                 {
-                    m_capturedSpawnCommands.push_back(spawnCmd);
-                    it = m_undoStackRef.erase(it); // Remove it from the main history tracking stack
+                    if (auto spawnCmd = std::dynamic_pointer_cast<SpawnSphereCommand>(*it))
+                    {
+                        m_capturedSpawnCommands.push_back(spawnCmd);
+                        it = m_undoStackRef.erase(it); //Remove it from the stack of main history tracking
+                    }
+                    else
+                    {
+                        ++it;
+                    }
                 }
-                else
+
+				//Trigger the undo sequence for however many spawn commands we captured to clear all spheres from the world and the registry
+                for (auto& spawnCmd : m_capturedSpawnCommands)
                 {
-                    ++it;
+                    spawnCmd->undo();
                 }
             }
 
-            // 2. Trigger the undo sequence for each captured spawn command.
-            // This safely tells the engine to clean them up and empties your active registry loop vector.
-            for (auto& spawnCmd : m_capturedSpawnCommands)
+            virtual void undo() override
             {
-                spawnCmd->undo();
+                for (auto& spawnCmd : m_capturedSpawnCommands)
+                {
+                    spawnCmd->execute();
+                }
             }
-        }
 
-        virtual void undo() override
-        {
-            for (auto& spawnCmd : m_capturedSpawnCommands)
-            {
-                spawnCmd->execute();
-            }
-        }
-
-    private:
-        std::vector<GameObject*>& m_sphereRegistry;
-        std::deque<std::shared_ptr<Command>>& m_undoStackRef;
-        std::vector<std::shared_ptr<SpawnSphereCommand>> m_capturedSpawnCommands{};
+        private:
+            std::vector<GameObject*>& m_sphereRegistry;
+            std::deque<std::shared_ptr<Command>>& m_undoStackRef;
+            std::vector<std::shared_ptr<SpawnSphereCommand>> m_capturedSpawnCommands{};
+            std::vector<std::shared_ptr<GameObject>> m_deletedSpheres;
     };
 }

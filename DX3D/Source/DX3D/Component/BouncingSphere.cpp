@@ -1,10 +1,5 @@
 #include <DX3D/Component/BouncingSphere.h>
-#include <DX3D/Game/GameObject.h>
-#include <DX3D/Component/TransformComponent.h>
-#include <cmath>
-#include <cstdlib>
 #include <DX3D/Math/MathUtils.h>
-#include <iostream>
 
 dx3d::BouncingSphere::BouncingSphere(const ComponentDesc& data) : Component(data)
 {

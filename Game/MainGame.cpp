@@ -7,7 +7,6 @@
 #include <DX3D/Math/MathUtils.h>
 #include <DX3D/Input/GameCommands.h>
 #include <DX3D/Component/BouncingSphere.h>
-#include <DX3D/Input/InputListener.h>
 #include <cmath>
 #include <vector>
 
@@ -21,42 +20,11 @@ void MainGame::onCreate()
 
 	auto& world = getWorld();
 
-	//auto floor = world.createGameObject<dx3d::GameObject>();
-	//floor->createOrGetComponent<dx3d::CubeComponent>();
-	//floor->getTransform().setScale({ 6.8f, 0.1f, 6.8f });
-	//floor->getTransform().setPosition({ 0, -1, 0 });
-
-
-	//srand((unsigned int)time(NULL));
-
-	//for (auto y = -2; y < 3; y++)
-	//{
-	//	for (auto x = -2; x < 3; x++)
-	//	{
-	//		auto obj = world.createGameObject<dx3d::GameObject>();
-	//		auto height = ((rand() % 120) + 80.0f) / 100.0f;
-	//		auto width = ((rand() % 600) + 200.0f) / 1000.0f;
-
-	//		obj->getTransform().setScale({ width, height, width });
-	//		obj->getTransform().setPosition({ x * 1.4f, (height / 2.0f) - 1.0f, y * 1.4f });
-
-	//		//Assign the layout structural tags
-	//		if (rand() % 2 == 0)
-	//		{
-	//			obj->createOrGetComponent<dx3d::CubeComponent>();
-	//		}
-	//		else
-	//		{
-	//			obj->createOrGetComponent<dx3d::SphereComponent>();
-	//		}
-	//	}
-	//}
-
 	auto player = world.createGameObject<Player>();
 	player->getTransform().setPosition({ 0.0f, 0.0f, -6.0f });
 
-	getInputSystem().setCursorLocked(true);
-	getInputSystem().setCursorVisible(false);
+	//getInputSystem().setCursorLocked(true);
+	//getInputSystem().setCursorVisible(false);
 }
 
 void MainGame::onUpdate(dx3d::f32 deltaTime)
@@ -69,8 +37,8 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 	if (!m_isInitialized)
 	{
 		auto& device = getGraphicsDevice();
-		m_cubeMesh = dx3d::MeshGenerator::createCube(device);
-		m_sphereMesh = dx3d::MeshGenerator::createSphere(device, 32, 16, 0.5f);
+		//m_cubeMesh = dx3d::MeshGenerator::createCube(device); //Call to initialize a cube from Mesh Generator
+		m_sphereMesh = dx3d::MeshGenerator::createSphere(device, 32, 16, 100.0f); //Call to initialize a sphere from Mesh Generator
 
 		m_isInitialized = true;
 	}
@@ -92,17 +60,16 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 		dx3d::Vec3 pos = transform.getPosition();
 		dx3d::Vec3 vel = bouncer->getVelocity();
 
-		// Accumulate delta movement over time
 		pos.x += vel.x * deltaTime;
 		pos.y += vel.y * deltaTime;
 
-		// Orthographic Screen Bouncing (4.0 x 3.0 window box)
-		float padding = 0.15f;
+		//Orthographic Screen Bouncing Logic
+		float padding = 100.0f; //Match the radius of the sphere from createSphere so that it bounces accurately at the edges of the screen
 
-		if (pos.x - padding <= -2.0f) { pos.x = -2.0f + padding; vel.x *= -1.0f; }
-		if (pos.x + padding >= 2.0f) { pos.x = 2.0f - padding;  vel.x *= -1.0f; }
-		if (pos.y - padding <= -1.5f) { pos.y = -1.5f + padding; vel.y *= -1.0f; }
-		if (pos.y + padding >= 1.5f) { pos.y = 1.5f - padding;  vel.y *= -1.0f; }
+		if (pos.x - padding <= -512.0f) { pos.x = -512.0f + padding; vel.x *= -1.0f; }
+		if (pos.x + padding >= 512.0f) { pos.x = 512.0f - padding;  vel.x *= -1.0f; }
+		if (pos.y - padding <= -384.0f) { pos.y = -384.0f + padding; vel.y *= -1.0f; }
+		if (pos.y + padding >= 384.0f) { pos.y = 384.0f - padding;  vel.y *= -1.0f; }
 
 		bouncer->setVelocity(vel);
 		transform.setPosition(pos);
@@ -114,8 +81,7 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 		return;
 	}
 
-	// REQUIREMENT 1: Spacebar spawns an tracking sphere
-	if (input.isKeyPressed(dx3d::KeyCode::Space))
+	if (input.isKeyPressed(dx3d::KeyCode::Space)) //Spawn a sphere whenever space is pressed and add it to the registry for tracking
 	{
 		m_commandManager.enqueueCommand(std::make_shared<dx3d::SpawnSphereCommand>(getWorld(), &m_sphereMesh, m_spawnedSpheres));
 	}
@@ -130,7 +96,7 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 		m_commandManager.redo();
 	}
 
-	// REQUIREMENT 3: Delete drops everything
+	//When delete is pressed clear all spheres from the world and the registry but can be undone with the undo command
 	if (input.isKeyPressed(dx3d::KeyCode::Delete))
 	{
 		if (!m_spawnedSpheres.empty())

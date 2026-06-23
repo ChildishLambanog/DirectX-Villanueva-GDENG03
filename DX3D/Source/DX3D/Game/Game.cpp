@@ -7,6 +7,7 @@
 #include <DX3D/Game/World.h>
 #include <DX3D/Game/GameObject.h>
 #include <DX3D/Game/WorldRenderer.h>
+#include <thread>
 
 dx3d::Game::Game(const GameDesc& desc)
 {
@@ -53,8 +54,22 @@ dx3d::GraphicsDevice& dx3d::Game::getGraphicsDevice() noexcept
 
 void dx3d::Game::onInternalUpdate()
 {
+	constexpr f32 targetFrameTime = 1.0f / 60.0f; //Target is 60 FPS
+
 	auto currentTime = std::chrono::steady_clock::now();
 	std::chrono::duration<f32> delta = currentTime - m_previousTime;
+
+	if (delta.count() < targetFrameTime)
+	{
+		f32 sleepTimeNeeded = targetFrameTime - delta.count(); //Calculate how much time we need to sleep to maintain a consistent frame rate
+
+		std::this_thread::sleep_for(std::chrono::duration<f32>(sleepTimeNeeded)); //Sleep for the remaining time in order to maintain a consistent frame rate
+
+		//Recalculate both currentTime and delta after waking up from sleep to get accurate delta time for the frame
+		currentTime = std::chrono::steady_clock::now();
+		delta = currentTime - m_previousTime;
+	}
+
 	m_previousTime = currentTime;
 	auto deltaTime = delta.count();
 

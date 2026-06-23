@@ -11,7 +11,7 @@ namespace dx3d
     {
         public:
             static Mesh createCube(GraphicsDevice& device);
-            static Mesh createSphere(GraphicsDevice& device, uint32_t sliceCount = 32, uint32_t stackCount = 16, float radius = 0.5f);
+            static Mesh createSphere(GraphicsDevice& device, uint32_t sliceCount = 32, uint32_t stackCount = 16, float radius = 0.5f); 
         private:
             struct LocalVertex
             {

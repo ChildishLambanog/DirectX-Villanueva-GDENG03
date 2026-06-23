@@ -106,5 +106,5 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 	}
 
 	m_graphicsDevice.executeCommandList(context);
-	swapChain.present();
+	swapChain.present(false); //Set it to false so that it won't clash with Game.cpp onInternalUpdate().
 }

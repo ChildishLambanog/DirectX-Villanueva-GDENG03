@@ -21,7 +21,6 @@ namespace dx3d
 				Mat4x4 view{};
 				Mat4x4 proj{};
 			};
-
 		private:
 			GraphicsDevice& m_graphicsDevice;
 			RefPtr<DeviceContext> m_deviceContext{};

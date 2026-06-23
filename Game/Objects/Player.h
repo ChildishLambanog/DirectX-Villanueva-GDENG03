@@ -1,7 +1,6 @@
 #pragma once
 #include <DX3D/All.h>
 
-
 class Player : public dx3d::GameObject
 {
 	dx3d_typeid(Player)
