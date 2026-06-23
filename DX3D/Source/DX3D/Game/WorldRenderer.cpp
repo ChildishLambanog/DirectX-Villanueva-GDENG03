@@ -50,7 +50,7 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 	auto size = swapChain.getSize();
 	auto& context = *m_deviceContext;
 
-	context.clearAndSetBackBuffer(swapChain, { 0.22f, 0.73f, 0.73f, 1.0f }); //change the second parameter to change the color of the back buffer.
+	context.clearAndSetBackBuffer(swapChain, { 0.0f, 0.0f, 0.0f, 1.0f }); //change the second parameter to change the color of the back buffer. 0.22f, 0.73f, 0.73f, 1.0f
 	context.setGraphicsPipelineState(*m_pipeline);
 	context.setViewportSize(size);
 

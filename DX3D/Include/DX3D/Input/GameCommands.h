@@ -16,7 +16,7 @@ namespace dx3d
 
             virtual void execute() override
             {
-                std::cout << "Sphere has been spawned \n";
+                //std::cout << "Sphere has been spawned \n";
 
                 m_spawnedObject = m_world.createGameObject<GameObject>(); //Create a new GameObject to represent the sphere in the world
                 m_spawnedObject->createOrGetComponent<BouncingSphere>(); //Add the bouncing sphere component to give it movement behavior
@@ -62,17 +62,16 @@ namespace dx3d
 
             virtual void execute() override
             {
-				m_capturedSpawnCommands.clear(); //Clear any previously captured commands
+                m_capturedSpawnCommands.clear(); //Clear any previously captured commands
 
-                //Move the SpawnSphere Commands from the undo stack into the local vector for this command to manage and call undo safely without affecting 
-                //the main undo stack's integrity.
+                //Move the SpawnSphere Commands from the undo stack into the local vector
                 auto it = m_undoStackRef.begin();
                 while (it != m_undoStackRef.end())
                 {
                     if (auto spawnCmd = std::dynamic_pointer_cast<SpawnSphereCommand>(*it))
                     {
                         m_capturedSpawnCommands.push_back(spawnCmd);
-                        it = m_undoStackRef.erase(it); //Remove it from the stack of main history tracking
+                        it = m_undoStackRef.erase(it); //Remove it from the main history stack
                     }
                     else
                     {
@@ -80,7 +79,7 @@ namespace dx3d
                     }
                 }
 
-				//Trigger the undo sequence for however many spawn commands we captured to clear all spheres from the world and the registry
+                //Trigger the undo sequence to clear all spheres from the world and the registry
                 for (auto& spawnCmd : m_capturedSpawnCommands)
                 {
                     spawnCmd->undo();
@@ -89,9 +88,11 @@ namespace dx3d
 
             virtual void undo() override
             {
+                //Re-execute our captured commands to spawn the spheres back into the game
                 for (auto& spawnCmd : m_capturedSpawnCommands)
                 {
                     spawnCmd->execute();
+					m_undoStackRef.push_back(spawnCmd); //Add back to the main history stack so that they can be undone again if needed
                 }
             }
 
@@ -99,6 +100,5 @@ namespace dx3d
             std::vector<GameObject*>& m_sphereRegistry;
             std::deque<std::shared_ptr<Command>>& m_undoStackRef;
             std::vector<std::shared_ptr<SpawnSphereCommand>> m_capturedSpawnCommands{};
-            std::vector<std::shared_ptr<GameObject>> m_deletedSpheres;
     };
 }

@@ -3,7 +3,7 @@
 
 dx3d::BouncingSphere::BouncingSphere(const ComponentDesc& data) : Component(data)
 {
-    float randomAngle = static_cast<float>(rand() % 360) * (3.14159265f / 180.0f);
+    float randomAngle = static_cast<float>(rand() % 360) * (dx3d::MathUtils::PI / 180.0f);
     m_velocity.x = cosf(randomAngle) * m_speed;
     m_velocity.y = sinf(randomAngle) * m_speed;
     m_velocity.z = 0.0f;
