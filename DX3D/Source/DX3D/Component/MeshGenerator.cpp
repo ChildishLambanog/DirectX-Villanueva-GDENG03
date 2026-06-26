@@ -7,6 +7,7 @@ dx3d::Mesh dx3d::MeshGenerator::createCube(GraphicsDevice& device)
 {
     Mesh mesh{};
 
+    //Cube with rainbow pixel shader applied to it.
     const LocalVertex vertexList[] =
     {
         {{-0.5f,-0.5f,-0.5f}, {1,0,0,1}},
@@ -19,6 +20,20 @@ dx3d::Mesh dx3d::MeshGenerator::createCube(GraphicsDevice& device)
         {{-0.5f,0.5f,0.5f},   {0,1,0,1}},
         {{-0.5f,-0.5f,0.5f},  {1,0,0,1}}
     };
+
+	//Cube with white shader applied to it.
+    //const LocalVertex vertexList[] =
+    //{
+    //    {{-0.5f,-0.5f,-0.5f}, {1,1,1,1}},
+    //    {{-0.5f,0.5f,-0.5f},  {1,1,1,1}},
+    //    {{0.5f,0.5f,-0.5f},   {1,1,1,1}},
+    //    {{0.5f,-0.5f,-0.5f},  {1,1,1,1}},
+
+    //    {{0.5f,-0.5f,0.5f},   {1,1,1,1}},
+    //    {{0.5f,0.5f,0.5f},    {1,1,1,1}},
+    //    {{-0.5f,0.5f,0.5f},   {1,1,1,1}},
+    //    {{-0.5f,-0.5f,0.5f},  {1,1,1,1}}
+    //};
 
     const dx3d::ui32 indexList[] =
     {

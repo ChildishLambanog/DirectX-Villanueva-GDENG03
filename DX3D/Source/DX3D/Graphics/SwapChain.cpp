@@ -40,9 +40,9 @@ void dx3d::SwapChain::present(bool vsync)
 
 void dx3d::SwapChain::reloadBuffers()
 {
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> buffer{};
-	DX3DGraphicsLogThrowOnFail(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&buffer)), "GetBuffer has failed!");
-	DX3DGraphicsLogThrowOnFail(m_device.CreateRenderTargetView(buffer.Get(), nullptr, &m_rtv), "CreateRenderTargetView has failed!");
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer{};
+	DX3DGraphicsLogThrowOnFail(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&backBuffer)), "GetBuffer has failed!");
+	DX3DGraphicsLogThrowOnFail(m_device.CreateRenderTargetView(backBuffer.Get(), nullptr, &m_rtv), "CreateRenderTargetView has failed!");
 
 	D3D11_TEXTURE2D_DESC depthTexDesc = {};
 	depthTexDesc.Width = std::max(1, m_size.width);
@@ -53,6 +53,7 @@ void dx3d::SwapChain::reloadBuffers()
 	depthTexDesc.SampleDesc.Count = 1;
 	depthTexDesc.ArraySize = 1;
 
-	DX3DGraphicsLogThrowOnFail(m_device.CreateTexture2D(&depthTexDesc, nullptr, &buffer), "CreateTexture2D has failed.");
-	DX3DGraphicsLogThrowOnFail(m_device.CreateDepthStencilView(buffer.Get(), NULL, &m_dsv), "CreateDepthStencilView has failed.");
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthBuffer{};
+	DX3DGraphicsLogThrowOnFail(m_device.CreateTexture2D(&depthTexDesc, nullptr, &depthBuffer), "CreateTexture2D has failed.");
+	DX3DGraphicsLogThrowOnFail(m_device.CreateDepthStencilView(depthBuffer.Get(), NULL, &m_dsv), "CreateDepthStencilView has failed.");
 }
