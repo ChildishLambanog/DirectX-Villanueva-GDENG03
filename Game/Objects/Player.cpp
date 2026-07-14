@@ -13,12 +13,10 @@ void Player::onCreate()
 	auto* camera = createOrGetComponent<dx3d::CameraComponent>();
 	if (camera)
 	{
-		// Set shared default values regardless of initial mode
 		camera->setViewportSize(dx3d::Rect{ 0, 0, 1024, 728 });
 		camera->setNearPlane(0.01f);
 		camera->setFarPlane(4000.0f);
 
-		// Force standard initialization setup to match Orthographic defaults
 		camera->setProjectionMode(dx3d::ProjectionMode::Orthographic);
 		getTransform().setPosition({ 0.0f, 0.0f, -2000.0f });
 		getTransform().setRotation({ 0.0f, 0.0f, 0.0f });
@@ -40,10 +38,6 @@ void Player::onUpdate(dx3d::f32 deltaTime)
 		if (m_camera->getProjectionMode() != dx3d::ProjectionMode::Perspective)
 		{
 			m_camera->setProjectionMode(dx3d::ProjectionMode::Perspective);
-
-			//Positioned the camera so its similar to the reference view for Test Case 6
-			//getTransform().setPosition({ 6.878085f, 4.118062f, -6.719581f });
-			//getTransform().setRotation({ 0.300000f, -0.829000f, 0.000000f });
 
 			//Positioned the camera so its similar to the reference view for Test Case 7
 			getTransform().setPosition({ 102.297028f, 0.067601f, -138.479294f });
@@ -68,7 +62,7 @@ void Player::onUpdate(dx3d::f32 deltaTime)
 		}
 	}
 
-	// --- RUN CONTROLS BASED ON PROJECTION MODE ---
+	//Controls for Perspective Mode
 	if (m_camera->getProjectionMode() == dx3d::ProjectionMode::Perspective)
 	{
 		auto sensitivity = 0.001f;
