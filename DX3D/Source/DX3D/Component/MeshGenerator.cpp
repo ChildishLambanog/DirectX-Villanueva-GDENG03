@@ -7,6 +7,7 @@ dx3d::Mesh dx3d::MeshGenerator::createCube(GraphicsDevice& device)
 {
     Mesh mesh{};
 
+    //Cube with rainbow pixel shader applied to it.
     const LocalVertex vertexList[] =
     {
         {{-0.5f,-0.5f,-0.5f}, {1,0,0,1}},
@@ -19,6 +20,20 @@ dx3d::Mesh dx3d::MeshGenerator::createCube(GraphicsDevice& device)
         {{-0.5f,0.5f,0.5f},   {0,1,0,1}},
         {{-0.5f,-0.5f,0.5f},  {1,0,0,1}}
     };
+
+	//Cube with white shader applied to it.
+    //const LocalVertex vertexList[] =
+    //{
+    //    {{-0.5f,-0.5f,-0.5f}, {1,1,1,1}},
+    //    {{-0.5f,0.5f,-0.5f},  {1,1,1,1}},
+    //    {{0.5f,0.5f,-0.5f},   {1,1,1,1}},
+    //    {{0.5f,-0.5f,-0.5f},  {1,1,1,1}},
+
+    //    {{0.5f,-0.5f,0.5f},   {1,1,1,1}},
+    //    {{0.5f,0.5f,0.5f},    {1,1,1,1}},
+    //    {{-0.5f,0.5f,0.5f},   {1,1,1,1}},
+    //    {{-0.5f,-0.5f,0.5f},  {1,1,1,1}}
+    //};
 
     const dx3d::ui32 indexList[] =
     {
@@ -55,7 +70,7 @@ dx3d::Mesh dx3d::MeshGenerator::createSphere(GraphicsDevice& device, uint32_t sl
         {
             float theta = j * thetaStep;
             dx3d::Vec3 pos(radius * sinf(phi) * cosf(theta), radius * cosf(phi), radius * sinf(phi) * sinf(theta));
-            dx3d::Vec4 color(pos.x + radius, pos.y + radius, pos.z + radius, 1.0f);
+            dx3d::Vec4 color(0.91f, 0.67f, 0.73f, 1.0f);
             sphereVertices.push_back({ pos, color });
         }
     }

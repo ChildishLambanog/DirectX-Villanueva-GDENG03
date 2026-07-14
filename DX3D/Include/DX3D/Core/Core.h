@@ -29,6 +29,7 @@ namespace dx3d
 	class VertexShaderSignature;
 	class ConstantBuffer;
 	class IndexBuffer;
+	class MeshGenerator;
 
 	class World;
 	class GameObject;

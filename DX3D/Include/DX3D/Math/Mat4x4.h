@@ -88,7 +88,8 @@ namespace dx3d
 				res.m_data[0][0] = 2.0f / width;
 				res.m_data[1][1] = 2.0f / height;
 				res.m_data[2][2] = 1.0f / (zFar - zNear);
-				res.m_data[3][2] = -(zNear / (zFar - zNear));
+				//res.m_data[3][2] = -(zNear / (zFar - zNear));
+				res.m_data[3][2] = -zNear / (zFar - zNear);
 				res.m_data[3][3] = 1;
 				return res;
 			}

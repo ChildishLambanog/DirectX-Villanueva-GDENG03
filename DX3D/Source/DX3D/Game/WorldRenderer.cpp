@@ -2,11 +2,8 @@
 #include <DX3D/Graphics/GraphicsDevice.h>
 #include <DX3D/Graphics/DeviceContext.h>
 #include <DX3D/Graphics/SwapChain.h>
-//#include <DX3D/Graphics/VertexBuffer.h>
-//#include <DX3D/Graphics/IndexBuffer.h>
 
 #include <DX3D/Game/World.h>
-//#include <DX3D/Game/Component.h>
 #include <DX3D/Game/GameObject.h>
 
 #include <DX3D/Component/TransformComponent.h>
@@ -53,7 +50,7 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 	auto size = swapChain.getSize();
 	auto& context = *m_deviceContext;
 
-	context.clearAndSetBackBuffer(swapChain, { 0.22f, 0.73f, 0.73f, 1.0f }); //change the second parameter to change the color of the back buffer.
+	context.clearAndSetBackBuffer(swapChain, { 0.0f, 0.0f, 0.12f, 1.0f }); //change the second parameter to change the color of the back buffer. 0.22f, 0.73f, 0.73f, 1.0f
 	context.setGraphicsPipelineState(*m_pipeline);
 	context.setViewportSize(size);
 
@@ -109,5 +106,5 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 	}
 
 	m_graphicsDevice.executeCommandList(context);
-	swapChain.present();
+	swapChain.present(false); //Set it to false so that it won't clash with Game.cpp onInternalUpdate().
 }
