@@ -7,6 +7,9 @@
 #include <DX3D/Game/World.h>
 #include <DX3D/Game/GameObject.h>
 #include <DX3D/Game/WorldRenderer.h>
+#include <imgui.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx11.h>
 #include <thread>
 
 dx3d::Game::Game(const GameDesc& desc)
@@ -24,11 +27,29 @@ dx3d::Game::Game(const GameDesc& desc)
 
 	m_inputSystemPtr->setCursorLockArea(m_display->getClientAreaInScreenSpace());
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; //Enable keyboard controls
+
+	ImGui::StyleColorsDark();
+
+	HWND hwnd = static_cast<HWND>(m_display->getHandle());
+	ID3D11Device* device = m_graphicsDevice->getD3DDevice();
+	ID3D11DeviceContext* immediateCtx = m_graphicsDevice->getImmediateDeviceContext();
+
+	ImGui_ImplWin32_Init(hwnd);
+	ImGui_ImplDX11_Init(device, immediateCtx);
+
 	DX3DLogInfo("Game is initialized successfully.");
 }
 
 dx3d::Game::~Game()
 {
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
 	DX3DLogInfo("Game memory deallocation started. Will shutdown");
 }
 
@@ -74,6 +95,10 @@ void dx3d::Game::onInternalUpdate()
 	auto deltaTime = delta.count();
 
 	m_inputSystemPtr->update();
+
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 
 	onUpdate(deltaTime);
 	m_world->update(deltaTime);

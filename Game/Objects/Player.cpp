@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <imgui.h>
 
 Player::Player(const dx3d::GameObjectDesc& desc) : dx3d::GameObject(desc)
 {}
@@ -27,6 +28,12 @@ void Player::onCreate()
 
 void Player::onUpdate(dx3d::f32 deltaTime)
 {
+	//If ImGui is capturing mouse or keyboard input, we should not process player input to avoid conflicts
+	if (ImGui::GetIO().WantCaptureMouse || ImGui::GetIO().WantCaptureKeyboard)
+	{
+		return;
+	}
+
 	auto& input = getInputSystem();
 	auto* m_camera = getComponent<dx3d::CameraComponent>();
 

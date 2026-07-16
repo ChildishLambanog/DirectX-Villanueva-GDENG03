@@ -7,6 +7,7 @@
 #include <DX3D/Math/MathUtils.h>
 #include <DX3D/Input/GameCommands.h>
 #include <DX3D/Component/BouncingSphere.h>
+#include <imgui.h>
 #include <cmath>
 #include <vector>
 
@@ -63,37 +64,10 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 		m_isInitialized = true;
 	}
 
-	for (size_t i = 0; i < m_spawnedSpheres.size(); ++i)
-	{
-		auto* sphereObject = m_spawnedSpheres[i];
-		if (!sphereObject) continue;
-
-		auto* bouncer = sphereObject->getComponent<dx3d::BouncingSphere>();
-		if (!bouncer)
-		{
-			m_spawnedSpheres.erase(m_spawnedSpheres.begin() + i);
-			--i;
-			continue;
-		}
-
-		auto& transform = sphereObject->getTransform();
-		dx3d::Vec3 pos = transform.getPosition();
-		dx3d::Vec3 vel = bouncer->getVelocity();
-
-		pos.x += vel.x * deltaTime;
-		pos.y += vel.y * deltaTime;
-
-		//Orthographic Screen Bouncing Logic
-		float padding = 100.0f; //Match the radius of the sphere from createSphere so that it bounces accurately at the edges of the screen
-
-		if (pos.x - padding <= -512.0f) { pos.x = -512.0f + padding; vel.x *= -1.0f; }
-		if (pos.x + padding >= 512.0f) { pos.x = 512.0f - padding;  vel.x *= -1.0f; }
-		if (pos.y - padding <= -384.0f) { pos.y = -384.0f + padding; vel.y *= -1.0f; }
-		if (pos.y + padding >= 384.0f) { pos.y = 384.0f - padding;  vel.y *= -1.0f; }
-
-		bouncer->setVelocity(vel);
-		transform.setPosition(pos);
-	}
+	//Test window
+	ImGui::Begin("ImGui Active!");
+	ImGui::Text("If you can see this, your DirectX 11 engine is fully wired!");
+	ImGui::End();
 
 	if (input.isKeyPressed(dx3d::KeyCode::Escape))
 	{
@@ -124,4 +98,36 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 			m_commandManager.enqueueCommand(std::make_shared<dx3d::ClearAllSpheresCommand>(m_spawnedSpheres, m_commandManager.getUndoStack()));
 		}
 	}
+
+	//for (size_t i = 0; i < m_spawnedSpheres.size(); ++i)
+	//{
+	//	auto* sphereObject = m_spawnedSpheres[i];
+	//	if (!sphereObject) continue;
+
+	//	auto* bouncer = sphereObject->getComponent<dx3d::BouncingSphere>();
+	//	if (!bouncer)
+	//	{
+	//		m_spawnedSpheres.erase(m_spawnedSpheres.begin() + i);
+	//		--i;
+	//		continue;
+	//	}
+
+	//	auto& transform = sphereObject->getTransform();
+	//	dx3d::Vec3 pos = transform.getPosition();
+	//	dx3d::Vec3 vel = bouncer->getVelocity();
+
+	//	pos.x += vel.x * deltaTime;
+	//	pos.y += vel.y * deltaTime;
+
+	//	//Orthographic Screen Bouncing Logic
+	//	float padding = 100.0f; //Match the radius of the sphere from createSphere so that it bounces accurately at the edges of the screen
+
+	//	if (pos.x - padding <= -512.0f) { pos.x = -512.0f + padding; vel.x *= -1.0f; }
+	//	if (pos.x + padding >= 512.0f) { pos.x = 512.0f - padding;  vel.x *= -1.0f; }
+	//	if (pos.y - padding <= -384.0f) { pos.y = -384.0f + padding; vel.y *= -1.0f; }
+	//	if (pos.y + padding >= 384.0f) { pos.y = 384.0f - padding;  vel.y *= -1.0f; }
+
+	//	bouncer->setVelocity(vel);
+	//	transform.setPosition(pos);
+	//}
 }

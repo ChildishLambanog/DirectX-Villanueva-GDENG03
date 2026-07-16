@@ -38,6 +38,16 @@ void dx3d::SwapChain::present(bool vsync)
 	}
 }
 
+ID3D11RenderTargetView* dx3d::SwapChain::getRTV() const noexcept
+{
+	return m_rtv.Get();
+}
+
+ID3D11DepthStencilView* dx3d::SwapChain::getDSV() const noexcept
+{
+	return m_dsv.Get();
+}
+
 void dx3d::SwapChain::reloadBuffers()
 {
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer{};

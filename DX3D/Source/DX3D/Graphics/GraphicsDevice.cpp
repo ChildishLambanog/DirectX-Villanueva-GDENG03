@@ -78,6 +78,16 @@ dx3d::RefPtr<dx3d::IndexBuffer> dx3d::GraphicsDevice::createIndexBuffer(const In
 	return std::make_shared<IndexBuffer>(desc, getGraphicsResourceDesc());
 }
 
+ID3D11Device* dx3d::GraphicsDevice::getD3DDevice() const noexcept
+{
+	return m_d3dDevice.Get();
+}
+
+ID3D11DeviceContext* dx3d::GraphicsDevice::getImmediateDeviceContext() const noexcept
+{
+	return m_d3dContext.Get();
+}
+
 void dx3d::GraphicsDevice::executeCommandList(DeviceContext& context)
 {
 	Microsoft::WRL::ComPtr<ID3D11CommandList> list{};
