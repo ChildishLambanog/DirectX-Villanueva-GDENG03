@@ -65,8 +65,14 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 	}
 
 	//Test window
-	ImGui::Begin("ImGui Active!");
-	ImGui::Text("If you can see this, your DirectX 11 engine is fully wired!");
+	ImGui::Begin("Credits");
+	ImGui::Text("GDENG03 DirectX11 Engine | Rafael Ira R. Villanueva");
+	ImGui::Text("-----------------------------------------------------------------------------");
+	ImGui::Text("\"Things you have now, things you've lost. People who're near by,");
+	ImGui::Text("people who've gone far away. No matter what you choose, truth is, both regret");
+	ImGui::Text("and reluctance are going to follow you around.You just have to make");
+	ImGui::Text("sure you don't make excuses to yourself down the road.\"");
+	ImGui::Text(" - Kentaro Miura, Berserk, Vol. 38");
 	ImGui::End();
 
 	if (input.isKeyPressed(dx3d::KeyCode::Escape))
@@ -75,29 +81,29 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 		return;
 	}
 
-	if (input.isKeyPressed(dx3d::KeyCode::Space)) //Spawn a sphere whenever space is pressed and add it to the registry for tracking
-	{
-		m_commandManager.enqueueCommand(std::make_shared<dx3d::SpawnSphereCommand>(getWorld(), &m_sphereMesh, m_spawnedSpheres));
-	}
+	//if (input.isKeyPressed(dx3d::KeyCode::Space)) //Spawn a sphere whenever space is pressed and add it to the registry for tracking
+	//{
+	//	m_commandManager.enqueueCommand(std::make_shared<dx3d::SpawnSphereCommand>(getWorld(), &m_sphereMesh, m_spawnedSpheres));
+	//}
 
-	if (input.isKeyPressed(dx3d::KeyCode::Backspace)) //Undo the last command whenever backspace is pressed
-	{
-		m_commandManager.undo();
-	}
+	//if (input.isKeyPressed(dx3d::KeyCode::Backspace)) //Undo the last command whenever backspace is pressed
+	//{
+	//	m_commandManager.undo();
+	//}
 
-	if (input.isKeyPressed(dx3d::KeyCode::R)) //Redo the last undone command whenever R is pressed
-	{
-		m_commandManager.redo();
-	}
+	//if (input.isKeyPressed(dx3d::KeyCode::R)) //Redo the last undone command whenever R is pressed
+	//{
+	//	m_commandManager.redo();
+	//}
 
-	//When delete is pressed clear all spheres from the world and the registry but can be undone with the undo command
-	if (input.isKeyPressed(dx3d::KeyCode::Delete))
-	{
-		if (!m_spawnedSpheres.empty())
-		{
-			m_commandManager.enqueueCommand(std::make_shared<dx3d::ClearAllSpheresCommand>(m_spawnedSpheres, m_commandManager.getUndoStack()));
-		}
-	}
+	////When delete is pressed clear all spheres from the world and the registry but can be undone with the undo command
+	//if (input.isKeyPressed(dx3d::KeyCode::Delete))
+	//{
+	//	if (!m_spawnedSpheres.empty())
+	//	{
+	//		m_commandManager.enqueueCommand(std::make_shared<dx3d::ClearAllSpheresCommand>(m_spawnedSpheres, m_commandManager.getUndoStack()));
+	//	}
+	//}
 
 	//for (size_t i = 0; i < m_spawnedSpheres.size(); ++i)
 	//{

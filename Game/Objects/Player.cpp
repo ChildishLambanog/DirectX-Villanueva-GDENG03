@@ -50,8 +50,8 @@ void Player::onUpdate(dx3d::f32 deltaTime)
 			getTransform().setPosition({ 102.297028f, 0.067601f, -138.479294f });
 			getTransform().setRotation({ 0.445000f, -0.609000f, 0.000000f });
 
-			input.setCursorLocked(true);
-			input.setCursorVisible(false);
+			input.setCursorLocked(false); //swapped for now due to UI
+			input.setCursorVisible(true); //swapped for now due to UI
 		}
 	}
 	//Toggle for Orthographic Mode

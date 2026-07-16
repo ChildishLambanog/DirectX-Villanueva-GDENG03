@@ -58,7 +58,7 @@ void dx3d::DeviceContext::drawIndexedTriangleList(ui32 indexCount, ui32 startVer
 	m_context->DrawIndexed(indexCount, startIndexLocation, startVertexIndex);
 }
 
-ID3D11DeviceContext* dx3d::DeviceContext::getRawContext() const noexcept
+ID3D11DeviceContext* dx3d::DeviceContext::getImmediateDeviceContext() const noexcept
 {
 	return m_context.Get();
 }

@@ -108,18 +108,20 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 		context.drawIndexedTriangleList(mesh->indexCount, 0u, 0u);
 	}
 
+	m_graphicsDevice.executeCommandList(context);
+
 	//UI
 	ImGui::Render();
 
 	//Bind swap chain's render target view and depth stencil view to the output merger stage of the pipeline before rendering ImGui draw data
 	ID3D11RenderTargetView* rtv = swapChain.getRTV();
 	ID3D11DepthStencilView* dsv = swapChain.getDSV();
-	ID3D11DeviceContext* rawContext = context.getRawContext();
 
-	rawContext->OMSetRenderTargets(1, &rtv, dsv);
+	ID3D11DeviceContext* immediateContext = m_graphicsDevice.getImmediateDeviceContext();
+
+	immediateContext->OMSetRenderTargets(1, &rtv, dsv);
 
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); //Record ImGui draw commands into the command list of the device context
 
-	m_graphicsDevice.executeCommandList(context);
 	swapChain.present(false); //Set it to false so that it won't clash with Game.cpp onInternalUpdate().
 }
