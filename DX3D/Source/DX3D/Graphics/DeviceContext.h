@@ -17,6 +17,7 @@ namespace dx3d
 			void updateConstantBuffer(const ConstantBuffer& buffer, const void* data);
 			void drawTriangleList(ui32 vertexCount, ui32 startVertexLocation);
 			void drawIndexedTriangleList(ui32 indexCount, ui32 startVertexIndex, ui32 startIndexLocation);
+			ID3D11DeviceContext* getImmediateDeviceContext() const noexcept;
 		private:
 			Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context{};
 			friend class GraphicsDevice;

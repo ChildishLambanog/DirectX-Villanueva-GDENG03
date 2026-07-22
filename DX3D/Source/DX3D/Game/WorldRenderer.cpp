@@ -11,6 +11,9 @@
 #include <DX3D/Component/SphereComponent.h>
 #include <DX3D/Component/CameraComponent.h>
 
+#include <imgui.h>
+#include <imgui_impl_dx11.h>
+
 #include <fstream>
 #include <ranges>
 
@@ -106,5 +109,19 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 	}
 
 	m_graphicsDevice.executeCommandList(context);
+
+	//UI
+	ImGui::Render();
+
+	//Bind swap chain's render target view and depth stencil view to the output merger stage of the pipeline before rendering ImGui draw data
+	ID3D11RenderTargetView* rtv = swapChain.getRTV();
+	ID3D11DepthStencilView* dsv = swapChain.getDSV();
+
+	ID3D11DeviceContext* immediateContext = m_graphicsDevice.getImmediateDeviceContext();
+
+	immediateContext->OMSetRenderTargets(1, &rtv, dsv);
+
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); //Record ImGui draw commands into the command list of the device context
+
 	swapChain.present(false); //Set it to false so that it won't clash with Game.cpp onInternalUpdate().
 }

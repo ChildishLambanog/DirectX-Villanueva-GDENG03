@@ -23,6 +23,10 @@ namespace dx3d
 			RefPtr<ConstantBuffer> createConstantBuffer(const ConstantBufferDesc& desc);
 			RefPtr<IndexBuffer> createIndexBuffer(const IndexBufferDesc& desc);
 
+			ID3D11Device* getD3DDevice() const noexcept;
+			ID3D11DeviceContext* getImmediateDeviceContext() const noexcept;
+			ID3D11Device* getRawDevice() const noexcept;
+
 			void executeCommandList(DeviceContext& context);
 		private:
 			GraphicsResourceDesc getGraphicsResourceDesc() const noexcept;

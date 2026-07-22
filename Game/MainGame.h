@@ -1,6 +1,7 @@
 #pragma once
 #include <DX3D/All.h>
 #include <DX3D/Component/Mesh.h>
+#include <d3d11.h>
 #include <DX3D/Input/CommandManager.h>
 
 class MainGame : public dx3d::Game
@@ -15,22 +16,19 @@ class MainGame : public dx3d::Game
 	private:
 		dx3d::Mesh m_cubeMesh;
 		dx3d::Mesh m_sphereMesh;
-		bool m_isInitialized{ false };
+		bool m_isInitialized = false;
 
 		dx3d::CommandManager m_commandManager{};
 		std::vector<dx3d::GameObject*> m_spawnedSpheres{};
 		
-		
-		dx3d::GameObject* m_animatedCube = nullptr; //Test Case 2,3 5
-		float m_animationTime = 0.0f; //Test Case 3 and 5
-		bool m_isFlat = true; //Test Case 5
+		bool m_showCreditsPanel = false;
+		dx3d::GameObject* m_selectedObject = nullptr;
 
-		struct CubeInstance //Test Case 4
-		{
-			dx3d::GameObject* gameObject = nullptr;
-			dx3d::Vec3 rotation{};
-			dx3d::Vec3 rotationSpeed{};
-		};
+		bool m_showColorPickerPanel = false;
+		float m_pickedColor[4] = { 0.0f, 0.0f, 0.12f, 1.0f };
 
-		std::vector<CubeInstance> m_randomCubes; //Test Case 4
+		//Logo Variables
+		ID3D11ShaderResourceView* m_logoSRV = nullptr;
+		int m_logoWidth = 0;
+		int m_logoHeight = 0;
 };

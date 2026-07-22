@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <imgui.h>
 
 Player::Player(const dx3d::GameObjectDesc& desc) : dx3d::GameObject(desc)
 {}
@@ -17,16 +18,20 @@ void Player::onCreate()
 		camera->setNearPlane(0.01f);
 		camera->setFarPlane(4000.0f);
 
-		camera->setProjectionMode(dx3d::ProjectionMode::Orthographic);
-		getTransform().setPosition({ 0.0f, 0.0f, -2000.0f });
-		getTransform().setRotation({ 0.0f, 0.0f, 0.0f });
-		getInputSystem().setCursorLocked(false);
-		getInputSystem().setCursorVisible(true);
+		camera->setProjectionMode(dx3d::ProjectionMode::Perspective);
+		getTransform().setPosition({ 102.297028f, 0.067601f, -138.479294f });
+		getTransform().setRotation({ 0.445000f, -0.609000f, 0.000000f });
 	}
 }
 
 void Player::onUpdate(dx3d::f32 deltaTime)
 {
+	//If ImGui is capturing mouse or keyboard input, we should not process player input to avoid conflicts
+	if (ImGui::GetIO().WantCaptureMouse || ImGui::GetIO().WantCaptureKeyboard)
+	{
+		return;
+	}
+
 	auto& input = getInputSystem();
 	auto* m_camera = getComponent<dx3d::CameraComponent>();
 
@@ -43,8 +48,8 @@ void Player::onUpdate(dx3d::f32 deltaTime)
 			getTransform().setPosition({ 102.297028f, 0.067601f, -138.479294f });
 			getTransform().setRotation({ 0.445000f, -0.609000f, 0.000000f });
 
-			input.setCursorLocked(true);
-			input.setCursorVisible(false);
+			input.setCursorLocked(false); //swapped for now due to UI
+			input.setCursorVisible(true); //swapped for now due to UI
 		}
 	}
 	//Toggle for Orthographic Mode
