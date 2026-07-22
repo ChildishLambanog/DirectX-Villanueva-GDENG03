@@ -88,6 +88,11 @@ ID3D11DeviceContext* dx3d::GraphicsDevice::getImmediateDeviceContext() const noe
 	return m_d3dContext.Get();
 }
 
+ID3D11Device* dx3d::GraphicsDevice::getRawDevice() const noexcept
+{
+	return m_d3dDevice.Get();
+}
+
 void dx3d::GraphicsDevice::executeCommandList(DeviceContext& context)
 {
 	Microsoft::WRL::ComPtr<ID3D11CommandList> list{};

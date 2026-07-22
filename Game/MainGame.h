@@ -1,6 +1,7 @@
 #pragma once
 #include <DX3D/All.h>
 #include <DX3D/Component/Mesh.h>
+#include <d3d11.h>
 #include <DX3D/Input/CommandManager.h>
 
 class MainGame : public dx3d::Game
@@ -22,4 +23,12 @@ class MainGame : public dx3d::Game
 		
 		bool m_showCreditsPanel = false;
 		dx3d::GameObject* m_selectedObject = nullptr;
+
+		bool m_showColorPickerPanel = false;
+		float m_pickedColor[4] = { 0.0f, 0.0f, 0.12f, 1.0f };
+
+		//Logo Variables
+		ID3D11ShaderResourceView* m_logoSRV = nullptr;
+		int m_logoWidth = 0;
+		int m_logoHeight = 0;
 };

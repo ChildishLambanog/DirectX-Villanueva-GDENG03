@@ -18,11 +18,9 @@ void Player::onCreate()
 		camera->setNearPlane(0.01f);
 		camera->setFarPlane(4000.0f);
 
-		camera->setProjectionMode(dx3d::ProjectionMode::Orthographic);
-		getTransform().setPosition({ 0.0f, 0.0f, -2000.0f });
-		getTransform().setRotation({ 0.0f, 0.0f, 0.0f });
-		getInputSystem().setCursorLocked(false);
-		getInputSystem().setCursorVisible(true);
+		camera->setProjectionMode(dx3d::ProjectionMode::Perspective);
+		getTransform().setPosition({ 102.297028f, 0.067601f, -138.479294f });
+		getTransform().setRotation({ 0.445000f, -0.609000f, 0.000000f });
 	}
 }
 

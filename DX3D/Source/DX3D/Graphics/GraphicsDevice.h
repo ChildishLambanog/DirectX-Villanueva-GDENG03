@@ -25,6 +25,7 @@ namespace dx3d
 
 			ID3D11Device* getD3DDevice() const noexcept;
 			ID3D11DeviceContext* getImmediateDeviceContext() const noexcept;
+			ID3D11Device* getRawDevice() const noexcept;
 
 			void executeCommandList(DeviceContext& context);
 		private:
