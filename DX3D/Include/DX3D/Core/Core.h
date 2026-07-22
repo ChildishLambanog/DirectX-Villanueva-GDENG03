@@ -36,6 +36,10 @@ namespace dx3d
 	class Component;
 	class TransformComponent;
 
+	class MeshComponent;
+	class CubeComponent;
+	class SphereComponent;
+
 	class WorldRenderer;
 
 	using i32 = int;

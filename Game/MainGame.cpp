@@ -91,6 +91,10 @@ void MainGame::onCreate()
 	cube->getTransform().setScale({ 100.0f, 100.0f, 100.0f });
 	cube->getTransform().setPosition({ 0, -250.0f, 0 });
 
+	auto customModelObj = world.createGameObject<dx3d::GameObject>();
+	customModelObj->createOrGetComponent<dx3d::MeshComponent>();
+	customModelObj->getTransform().setScale({ 10.0f, 10.0f, 10.0f });
+	customModelObj->getTransform().setPosition({ 0.0f, 0.0f, 0.0f });
 	
 	auto player = world.createGameObject<Player>();
 	player->getTransform().setPosition({ 0.0f, 0.0f, -6.0f });
@@ -109,12 +113,21 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 		auto& device = getGraphicsDevice();
 		m_cubeMesh = dx3d::MeshGenerator::createCube(device); //Call to initialize a cube from Mesh Generator
 		m_sphereMesh = dx3d::MeshGenerator::createSphere(device, 32, 16, 100.0f); //Call to initialize a sphere from Mesh Generator
+		//m_customModelMesh = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/teapot.obj", { 0.2f, 0.8f, 0.4f, 1.0f });
+		m_customModelMesh = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/mosasaurus.obj", { 0.2f, 0.8f, 0.4f, 1.0f });
 
 		dx3d::ui32 outCount = 0;
 		auto cubes = world.getComponents<dx3d::CubeComponent>(outCount);
 		for (dx3d::ui32 i = 0; i < outCount; ++i) 
 		{
 			cubes[i]->setMesh(&m_cubeMesh);
+		}
+
+		dx3d::ui32 meshCount = 0;
+		auto meshComps = world.getComponents<dx3d::MeshComponent>(meshCount);
+		for (dx3d::ui32 i = 0; i < meshCount; ++i)
+		{
+			meshComps[i]->setMesh(&m_customModelMesh);
 		}
 
 		bool loaded = LoadTextureFromFile("DX3D/Assets/Sprites/logo.png", device.getRawDevice(), &m_logoSRV, &m_logoWidth, &m_logoHeight);
@@ -229,6 +242,13 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 	auto cameras = world.getComponents<dx3d::CameraComponent>(count);
 	for (dx3d::ui32 i = 0; i < count; ++i) {
 		auto* obj = &cameras[i]->getGameObject();
+		if (std::find(uniqueObjects.begin(), uniqueObjects.end(), obj) == uniqueObjects.end())
+			uniqueObjects.push_back(obj);
+	}
+
+	auto customModels = world.getComponents<dx3d::MeshComponent>(count);
+	for (dx3d::ui32 i = 0; i < count; ++i) {
+		auto* obj = &customModels[i]->getGameObject();
 		if (std::find(uniqueObjects.begin(), uniqueObjects.end(), obj) == uniqueObjects.end())
 			uniqueObjects.push_back(obj);
 	}
