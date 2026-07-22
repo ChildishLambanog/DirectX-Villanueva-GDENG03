@@ -191,6 +191,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX3D\Include\DX3D\Component\BouncingSphere.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Component\MeshComponent.h" />
     <ClInclude Include="DX3D\Include\DX3D\Input\CommandManager.h" />
     <ClInclude Include="DX3D\Include\DX3D\Component\CameraComponent.h" />
     <ClInclude Include="DX3D\Include\DX3D\Component\CubeComponent.h" />

@@ -290,5 +290,8 @@
     <ClInclude Include="Game\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DX3D\Include\DX3D\Component\MeshComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

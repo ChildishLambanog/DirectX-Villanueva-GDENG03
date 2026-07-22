@@ -11,6 +11,8 @@
 #include <DX3D/Component/SphereComponent.h>
 #include <DX3D/Component/CameraComponent.h>
 
+#include <DX3D/Component/MeshComponent.h>
+
 #include <imgui.h>
 #include <imgui_impl_dx11.h>
 
@@ -96,6 +98,23 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 	for (auto i : std::views::iota(0u, numSpheres))
 	{
 		auto* comp = spheres[i];
+		const Mesh* mesh = comp->getMesh();
+		if (!mesh) continue;
+
+		data.world = comp->getGameObject().getTransform().getAffineWorldMatrix();
+		context.updateConstantBuffer(*m_cb, &data);
+
+		context.setVertexBuffer(*(mesh->vb));
+		context.setConstantBuffer(*m_cb);
+		context.setIndexBuffer(*(mesh->ib));
+		context.drawIndexedTriangleList(mesh->indexCount, 0u, 0u);
+	}
+
+	auto numModels = 0u;
+	auto models = world.getComponents<MeshComponent>(numModels);
+	for (auto i : std::views::iota(0u, numModels))
+	{
+		auto* comp = models[i];
 		const Mesh* mesh = comp->getMesh();
 		if (!mesh) continue;
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <DX3D/All.h>
 #include <DX3D/Component/Mesh.h>
+#include <DX3D/Component/MeshComponent.h>
 #include <d3d11.h>
 #include <DX3D/Input/CommandManager.h>
 
@@ -16,6 +17,8 @@ class MainGame : public dx3d::Game
 	private:
 		dx3d::Mesh m_cubeMesh;
 		dx3d::Mesh m_sphereMesh;
+		dx3d::Mesh m_customModelMesh;
+
 		bool m_isInitialized = false;
 
 		dx3d::CommandManager m_commandManager{};
