@@ -15,8 +15,10 @@ class MainGame : public dx3d::Game
 		virtual void onUpdate(dx3d::f32 deltaTime);
 
 	private:
-		dx3d::Mesh m_cubeMesh;
-		dx3d::Mesh m_sphereMesh;
+		dx3d::Mesh m_untexturedCubeMesh; // Left without texture -> Renders rainbow vertex colors!
+		dx3d::Mesh m_texturedCubeMesh;
+		dx3d::Mesh m_untexturedSphereMesh;
+		dx3d::Mesh m_texturedSphereMesh;
 		dx3d::Mesh m_customModelMesh;
 
 		bool m_isInitialized = false;
@@ -34,4 +36,8 @@ class MainGame : public dx3d::Game
 		ID3D11ShaderResourceView* m_logoSRV = nullptr;
 		int m_logoWidth = 0;
 		int m_logoHeight = 0;
+
+		//Texture Variables
+		ID3D11ShaderResourceView* m_cubeTextureSRV = nullptr;
+		ID3D11ShaderResourceView* m_sphereTextureSRV = nullptr;
 };

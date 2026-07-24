@@ -4,6 +4,7 @@
 #include <DX3D/Math/Vec3.h>
 #include <DX3D/Math/Vec4.h>
 #include <DX3D/Math/Mat4x4.h>
+#include <DX3D/Graphics/ShaderLibrary.h>
 
 namespace dx3d
 {
@@ -22,9 +23,11 @@ namespace dx3d
 				Mat4x4 proj{};
 			};
 		private:
+			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_defaultWhiteSRV;
 			GraphicsDevice& m_graphicsDevice;
 			RefPtr<DeviceContext> m_deviceContext{};
 			RefPtr<GraphicsPipelineState> m_pipeline{};
 			RefPtr<ConstantBuffer> m_cb{};
+			ShaderLibrary m_shaderLibrary;
 	};
 }

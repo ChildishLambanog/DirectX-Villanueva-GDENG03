@@ -18,6 +18,8 @@ namespace dx3d
 			void drawTriangleList(ui32 vertexCount, ui32 startVertexLocation);
 			void drawIndexedTriangleList(ui32 indexCount, ui32 startVertexIndex, ui32 startIndexLocation);
 			ID3D11DeviceContext* getImmediateDeviceContext() const noexcept;
+			void setTexture(ui32 slot, ID3D11ShaderResourceView* srv);
+			void setSampler(ui32 slot, ID3D11SamplerState* sampler);
 		private:
 			Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context{};
 			friend class GraphicsDevice;

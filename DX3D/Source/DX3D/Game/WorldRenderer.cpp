@@ -16,7 +16,6 @@
 #include <imgui.h>
 #include <imgui_impl_dx11.h>
 
-#include <fstream>
 #include <ranges>
 
 dx3d::WorldRenderer::WorldRenderer(const WorldRendererDesc& desc) : Base(desc.base), m_graphicsDevice(desc.engine)
@@ -24,24 +23,12 @@ dx3d::WorldRenderer::WorldRenderer(const WorldRendererDesc& desc) : Base(desc.ba
 	auto& device = m_graphicsDevice;
 	m_deviceContext = device.createDeviceContext();
 
-	constexpr char shaderFileFPath[] = "DX3D/Assets/Shaders/Basic.hlsl";
-	std::ifstream shaderFileStream(shaderFileFPath);
-	if (!shaderFileStream) DX3DLogThrowError("Failed to open shader file");
+	m_shaderLibrary.init(device);
+	//m_shaderLibrary.loadShader(device, "Basic", "DX3D/Assets/Shaders/Basic.hlsl");
+	m_shaderLibrary.loadShader(device, "Textured", "DX3D/Assets/Shaders/Textured.hlsl");
+	
+	m_defaultWhiteSRV = Create1x1WhiteTexture(device.getRawDevice());
 
-	std::string shaderFileData
-	{
-		std::istreambuf_iterator<char>(shaderFileStream),
-		std::istreambuf_iterator<char>()
-	};
- 
-	auto shaderSourceCode = shaderFileData.c_str();
-	auto shaderSourceCodeSize = shaderFileData.length();
-
-	auto vs = device.compileShader({ shaderFileFPath, shaderSourceCode, shaderSourceCodeSize, "VSMain", ShaderType::VertexShader });
-	auto ps = device.compileShader({ shaderFileFPath, shaderSourceCode, shaderSourceCodeSize, "PSMain", ShaderType::PixelShader });
-	auto vsSignature = device.createVertexShaderSignature ({ vs });
-
-	m_pipeline = device.createGraphicsPipelineState({ *vsSignature, *ps });
 	m_cb = device.createConstantBuffer({ {}, sizeof(ConstantData) });
 }
 
@@ -56,8 +43,17 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 	auto& context = *m_deviceContext;
 
 	context.clearAndSetBackBuffer(swapChain, { 0.0f, 0.0f, 0.12f, 1.0f }); //change the second parameter to change the color of the back buffer. 0.22f, 0.73f, 0.73f, 1.0f
-	context.setGraphicsPipelineState(*m_pipeline);
 	context.setViewportSize(size);
+
+	// Bind default linear sampler to slot 0
+	context.setSampler(0, m_shaderLibrary.getLinearSampler());
+
+	// Set textured pipeline as default
+	auto texturedPipeline = m_shaderLibrary.getShader("Textured");
+	if (texturedPipeline)
+	{
+		context.setGraphicsPipelineState(*texturedPipeline);
+	}
 
 	auto numComponents = 0u;
 	ConstantData data{};
@@ -74,58 +70,43 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 		}
 	}
 
+	// Helper Lambda to Render Component Meshes
+	auto renderMeshComponents = [&](auto components, ui32 count)
+	{
+		for (auto i : std::views::iota(0u, count))
+		{
+			auto* comp = components[i];
+			const Mesh* mesh = comp->getMesh();
+			if (!mesh) continue;
+
+			data.world = comp->getGameObject().getTransform().getAffineWorldMatrix();
+			context.updateConstantBuffer(*m_cb, &data);
+
+			// Check if mesh has a custom texture; if not, fallback to 1x1 White Texture!
+			ID3D11ShaderResourceView* srvToBind = mesh->textureSRV ? mesh->textureSRV : m_defaultWhiteSRV.Get();
+			context.setTexture(0, srvToBind);
+
+			context.setVertexBuffer(*(mesh->vb));
+			context.setConstantBuffer(*m_cb);
+			context.setIndexBuffer(*(mesh->ib));
+			context.drawIndexedTriangleList(mesh->indexCount, 0u, 0u);
+		}
+	};
+
 	//Cubes
 	auto numCubes = 0u;
 	auto cubes = world.getComponents<CubeComponent>(numCubes);
-	for (auto i : std::views::iota(0u, numCubes))
-	{
-		auto* comp = cubes[i];
-		const Mesh* mesh = comp->getMesh();
-		if (!mesh) continue;
-
-		data.world = comp->getGameObject().getTransform().getAffineWorldMatrix();
-		context.updateConstantBuffer(*m_cb, &data);
-
-		context.setVertexBuffer(*(mesh->vb));
-		context.setConstantBuffer(*m_cb);
-		context.setIndexBuffer(*(mesh->ib));
-		context.drawIndexedTriangleList(mesh->indexCount, 0u, 0u);
-	}
+	renderMeshComponents(cubes, numCubes);
 
 	//Spheres
 	auto numSpheres = 0u;
 	auto spheres = world.getComponents<SphereComponent>(numSpheres);
-	for (auto i : std::views::iota(0u, numSpheres))
-	{
-		auto* comp = spheres[i];
-		const Mesh* mesh = comp->getMesh();
-		if (!mesh) continue;
+	renderMeshComponents(spheres, numSpheres);
 
-		data.world = comp->getGameObject().getTransform().getAffineWorldMatrix();
-		context.updateConstantBuffer(*m_cb, &data);
-
-		context.setVertexBuffer(*(mesh->vb));
-		context.setConstantBuffer(*m_cb);
-		context.setIndexBuffer(*(mesh->ib));
-		context.drawIndexedTriangleList(mesh->indexCount, 0u, 0u);
-	}
-
+	//OBJ Models
 	auto numModels = 0u;
 	auto models = world.getComponents<MeshComponent>(numModels);
-	for (auto i : std::views::iota(0u, numModels))
-	{
-		auto* comp = models[i];
-		const Mesh* mesh = comp->getMesh();
-		if (!mesh) continue;
-
-		data.world = comp->getGameObject().getTransform().getAffineWorldMatrix();
-		context.updateConstantBuffer(*m_cb, &data);
-
-		context.setVertexBuffer(*(mesh->vb));
-		context.setConstantBuffer(*m_cb);
-		context.setIndexBuffer(*(mesh->ib));
-		context.drawIndexedTriangleList(mesh->indexCount, 0u, 0u);
-	}
+	renderMeshComponents(models, numModels);
 
 	m_graphicsDevice.executeCommandList(context);
 
@@ -139,7 +120,6 @@ void dx3d::WorldRenderer::render(const World& world, SwapChain& swapChain, f32 d
 	ID3D11DeviceContext* immediateContext = m_graphicsDevice.getImmediateDeviceContext();
 
 	immediateContext->OMSetRenderTargets(1, &rtv, dsv);
-
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); //Record ImGui draw commands into the command list of the device context
 
 	swapChain.present(false); //Set it to false so that it won't clash with Game.cpp onInternalUpdate().

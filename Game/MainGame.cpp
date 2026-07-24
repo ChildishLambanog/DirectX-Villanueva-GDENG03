@@ -93,7 +93,7 @@ void MainGame::onCreate()
 
 	auto customModelObj = world.createGameObject<dx3d::GameObject>();
 	customModelObj->createOrGetComponent<dx3d::MeshComponent>();
-	customModelObj->getTransform().setScale({ 10.0f, 10.0f, 10.0f });
+	customModelObj->getTransform().setScale({ 0.5f, 0.5f, 0.5f });
 	customModelObj->getTransform().setPosition({ 0.0f, 0.0f, 0.0f });
 	
 	auto player = world.createGameObject<Player>();
@@ -111,16 +111,49 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 	if (!m_isInitialized)
 	{
 		auto& device = getGraphicsDevice();
-		m_cubeMesh = dx3d::MeshGenerator::createCube(device); //Call to initialize a cube from Mesh Generator
-		m_sphereMesh = dx3d::MeshGenerator::createSphere(device, 32, 16, 100.0f); //Call to initialize a sphere from Mesh Generator
+
+		m_untexturedCubeMesh = dx3d::MeshGenerator::createCube(device); //Call to initialize a cube from Mesh Generator
+		m_texturedCubeMesh = dx3d::MeshGenerator::createCube(device); //Call to initialize a cube from Mesh Generator
+
+		m_untexturedSphereMesh = dx3d::MeshGenerator::createSphere(device, 32, 16, 100.0f); //Call to initialize a sphere from Mesh Generator
+		m_texturedSphereMesh = dx3d::MeshGenerator::createSphere(device, 32, 16, 100.0f); //Call to initialize a sphere from Mesh Generator
+
 		//m_customModelMesh = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/teapot.obj", { 0.2f, 0.8f, 0.4f, 1.0f });
-		m_customModelMesh = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/mosasaurus.obj", { 0.2f, 0.8f, 0.4f, 1.0f });
+		m_customModelMesh = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/mosasaurus.obj", { 1.0f, 1.0f, 1.0f, 1.0f });
+
+		int dummyW = 0, dummyH = 0;
+
+		bool loaded = LoadTextureFromFile("DX3D/Assets/Sprites/logo.png", device.getRawDevice(), &m_logoSRV, &m_logoWidth, &m_logoHeight);
+		if (!loaded)
+		{
+			OutputDebugStringA("WARNING: Failed to load logo.png! Check path directory.\n");
+		}
+
+		bool loadedMosa = LoadTextureFromFile("DX3D/Assets/Textures/mosasaurus.png", device.getRawDevice(), &m_customModelMesh.textureSRV, &dummyW, &dummyH);
+		if (!loadedMosa)
+		{
+			OutputDebugStringA("WARNING: Failed to load mosasaurus.png!\n");
+		}
+
+		// Load texture for Cube Primitive
+		bool loadedCubeTex = LoadTextureFromFile("DX3D/Assets/Textures/box.png", device.getRawDevice(), &m_texturedCubeMesh.textureSRV, &dummyW, &dummyH);
+		if (!loadedCubeTex)
+		{
+			OutputDebugStringA("WARNING: Failed to load box.png!\n");
+		}
 
 		dx3d::ui32 outCount = 0;
 		auto cubes = world.getComponents<dx3d::CubeComponent>(outCount);
-		for (dx3d::ui32 i = 0; i < outCount; ++i) 
+		
+		if (outCount >= 1)
 		{
-			cubes[i]->setMesh(&m_cubeMesh);
+			// First cube object (the ground plane) uses the UNTEXTURED rainbow mesh
+			cubes[0]->setMesh(&m_untexturedCubeMesh);
+		}
+		if (outCount >= 2)
+		{
+			// Second cube object uses the TEXTURED box mesh
+			cubes[1]->setMesh(&m_texturedCubeMesh);
 		}
 
 		dx3d::ui32 meshCount = 0;
@@ -128,12 +161,6 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 		for (dx3d::ui32 i = 0; i < meshCount; ++i)
 		{
 			meshComps[i]->setMesh(&m_customModelMesh);
-		}
-
-		bool loaded = LoadTextureFromFile("DX3D/Assets/Sprites/logo.png", device.getRawDevice(), &m_logoSRV, &m_logoWidth, &m_logoHeight);
-		if (!loaded)
-		{
-			OutputDebugStringA("WARNING: Failed to load logo.png! Check path directory.\n");
 		}
 
 		m_isInitialized = true;
