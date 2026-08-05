@@ -9,9 +9,9 @@
 
 namespace dx3d
 {
-    inline ID3D11ShaderResourceView* Create1x1WhiteTexture(ID3D11Device* device)
+    inline ID3D11ShaderResourceView* Create1x1Texture(ID3D11Device* device)
     {
-        uint32_t pixel = 0xFFFFFFFF; // Pure White (R:255, G:255, B:255, A:255)
+        uint32_t pixel = 0xFFDF80FF; // Pure White (R:255, G:255, B:255, A:255) 0xFFFFFFFF
 
         D3D11_TEXTURE2D_DESC desc{};
         desc.Width = 1;

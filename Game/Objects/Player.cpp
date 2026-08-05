@@ -70,19 +70,53 @@ void Player::onUpdate(dx3d::f32 deltaTime)
 	//Controls for Perspective Mode
 	if (m_camera->getProjectionMode() == dx3d::ProjectionMode::Perspective)
 	{
-		auto sensitivity = 0.001f;
-		auto rot = getTransform().getRotation();
-		rot.x += input.getMouseDelta().y * sensitivity;
-		rot.y += input.getMouseDelta().x * sensitivity;
+		HWND hwnd = GetActiveWindow(); // Get your window handle
 
-		if (rot.x > 1.57f) rot.x = 1.57f;
-		else if (rot.x < -1.57f) rot.x = -1.57f;
-		getTransform().setRotation(rot);
+		// 1. Check if Right Mouse Button was just pressed
+		if (!ImGui::GetIO().WantCaptureMouse && input.isKeyDown(dx3d::KeyCode::MouseRight))
+		{
+			if (!m_isRMBHeld)
+			{
+				m_isRMBHeld = true;
 
+				// Save where the cursor was before hiding it
+				GetCursorPos(&m_savedCursorPos);
+
+				// Hide cursor and capture mouse events off-screen
+				ShowCursor(FALSE);
+				SetCapture(hwnd);
+			}
+
+			// 2. Rotate Camera while held
+			auto sensitivity = 0.001f;
+			auto rot = getTransform().getRotation();
+
+			rot.x += input.getMouseDelta().y * sensitivity;
+			rot.y += input.getMouseDelta().x * sensitivity;
+
+			if (rot.x > 1.57f) rot.x = 1.57f;
+			else if (rot.x < -1.57f) rot.x = -1.57f;
+
+			getTransform().setRotation(rot);
+		}
+		else if (m_isRMBHeld)
+		{
+			// 3. Right Mouse Button was RELEASED
+			m_isRMBHeld = false;
+
+			// Release capture and restore cursor visibility
+			ReleaseCapture();
+			ShowCursor(TRUE);
+
+			// Put cursor back where the user originally right-clicked
+			SetCursorPos(m_savedCursorPos.x, m_savedCursorPos.y);
+		}
+
+		// Movement Controls (W, A, S, D)
 		auto pos = getTransform().getPosition();
 		auto forward = 0.0f;
 		auto right = 0.0f;
-		auto speed = 200.0f; //Adjust speed as needed for player movement
+		auto speed = 200.0f;
 
 		if (input.isKeyDown(dx3d::KeyCode::W)) forward = 1.0f;
 		if (input.isKeyDown(dx3d::KeyCode::S)) forward = -1.0f;

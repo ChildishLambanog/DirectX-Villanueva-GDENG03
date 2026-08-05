@@ -24,10 +24,10 @@ dx3d::WorldRenderer::WorldRenderer(const WorldRendererDesc& desc) : Base(desc.ba
 	m_deviceContext = device.createDeviceContext();
 
 	m_shaderLibrary.init(device);
-	//m_shaderLibrary.loadShader(device, "Basic", "DX3D/Assets/Shaders/Basic.hlsl");
+	m_shaderLibrary.loadShader(device, "Basic", "DX3D/Assets/Shaders/Basic.hlsl");
 	m_shaderLibrary.loadShader(device, "Textured", "DX3D/Assets/Shaders/Textured.hlsl");
 	
-	m_defaultWhiteSRV = Create1x1WhiteTexture(device.getRawDevice());
+	m_defaultWhiteSRV = Create1x1Texture(device.getRawDevice()); //Create a 1x1 texture to use as a default texture when a mesh doesn't have a texture assigned to it.
 
 	m_cb = device.createConstantBuffer({ {}, sizeof(ConstantData) });
 }

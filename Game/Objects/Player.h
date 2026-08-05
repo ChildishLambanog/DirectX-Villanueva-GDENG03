@@ -12,6 +12,7 @@ protected:
 	virtual void onUpdate(dx3d::f32 deltaTime);
 
 private:
-
+	bool m_isRMBHeld = false;
+	POINT m_savedCursorPos = { 0, 0 };
 	GameObject* m_cam{};
 };

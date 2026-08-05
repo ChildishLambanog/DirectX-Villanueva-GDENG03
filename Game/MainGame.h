@@ -19,7 +19,10 @@ class MainGame : public dx3d::Game
 		dx3d::Mesh m_texturedCubeMesh;
 		dx3d::Mesh m_untexturedSphereMesh;
 		dx3d::Mesh m_texturedSphereMesh;
-		dx3d::Mesh m_customModelMesh;
+		dx3d::Mesh m_Mosa;
+		dx3d::Mesh m_Teapot;
+		dx3d::Mesh m_Bunny;
+		dx3d::Mesh m_Armadillo;
 
 		bool m_isInitialized = false;
 
