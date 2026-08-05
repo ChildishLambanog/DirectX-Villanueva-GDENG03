@@ -91,10 +91,25 @@ void MainGame::onCreate()
 	cube->getTransform().setScale({ 100.0f, 100.0f, 100.0f });
 	cube->getTransform().setPosition({ 0, -250.0f, 0 });
 
-	auto customModelObj = world.createGameObject<dx3d::GameObject>();
-	customModelObj->createOrGetComponent<dx3d::MeshComponent>();
-	customModelObj->getTransform().setScale({ 10.0f, 10.0f, 10.0f });
-	customModelObj->getTransform().setPosition({ 0.0f, 0.0f, 0.0f });
+	auto mosasaurusOBJ = world.createGameObject<dx3d::GameObject>();
+	mosasaurusOBJ->createOrGetComponent<dx3d::MeshComponent>();
+	mosasaurusOBJ->getTransform().setScale({ 0.5f, 0.5f, 0.5f });
+	mosasaurusOBJ->getTransform().setPosition({ 0.0f, 0.0f, 0.0f });
+
+	auto teapotOBJ = world.createGameObject<dx3d::GameObject>();
+	teapotOBJ->createOrGetComponent<dx3d::MeshComponent>();
+	teapotOBJ->getTransform().setScale({ 100.0f, 100.0f, 100.0f });
+	teapotOBJ->getTransform().setPosition({ 109.0f, 10.0f, -292.0f });
+
+	auto bunnyOBJ = world.createGameObject<dx3d::GameObject>();
+	bunnyOBJ->createOrGetComponent<dx3d::MeshComponent>();
+	bunnyOBJ->getTransform().setScale({ 100.0f, 100.0f, 100.0f });
+	bunnyOBJ->getTransform().setPosition({ 237.0f, 52.0f, -257.0f });
+
+	auto armadilloOBJ = world.createGameObject<dx3d::GameObject>();
+	armadilloOBJ->createOrGetComponent<dx3d::MeshComponent>();
+	armadilloOBJ->getTransform().setScale({ 20.0f, 20.0f, 20.0f });
+	armadilloOBJ->getTransform().setPosition({ 173.0f, 98.0f, 85.0f });
 	
 	auto player = world.createGameObject<Player>();
 	player->getTransform().setPosition({ 0.0f, 0.0f, -6.0f });
@@ -111,31 +126,90 @@ void MainGame::onUpdate(dx3d::f32 deltaTime)
 	if (!m_isInitialized)
 	{
 		auto& device = getGraphicsDevice();
-		m_cubeMesh = dx3d::MeshGenerator::createCube(device); //Call to initialize a cube from Mesh Generator
-		m_sphereMesh = dx3d::MeshGenerator::createSphere(device, 32, 16, 100.0f); //Call to initialize a sphere from Mesh Generator
-		//m_customModelMesh = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/teapot.obj", { 0.2f, 0.8f, 0.4f, 1.0f });
-		m_customModelMesh = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/mosasaurus.obj", { 0.2f, 0.8f, 0.4f, 1.0f });
 
-		dx3d::ui32 outCount = 0;
-		auto cubes = world.getComponents<dx3d::CubeComponent>(outCount);
-		for (dx3d::ui32 i = 0; i < outCount; ++i) 
-		{
-			cubes[i]->setMesh(&m_cubeMesh);
-		}
+		m_untexturedCubeMesh = dx3d::MeshGenerator::createCube(device); //Call to initialize a cube from Mesh Generator
+		m_texturedCubeMesh = dx3d::MeshGenerator::createCube(device); //Call to initialize a cube from Mesh Generator
 
-		dx3d::ui32 meshCount = 0;
-		auto meshComps = world.getComponents<dx3d::MeshComponent>(meshCount);
-		for (dx3d::ui32 i = 0; i < meshCount; ++i)
-		{
-			meshComps[i]->setMesh(&m_customModelMesh);
-		}
+		m_untexturedSphereMesh = dx3d::MeshGenerator::createSphere(device, 32, 16, 100.0f); //Call to initialize a sphere from Mesh Generator
+		m_texturedSphereMesh = dx3d::MeshGenerator::createSphere(device, 32, 16, 100.0f); //Call to initialize a sphere from Mesh Generator
+
+		m_Teapot = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/teapot.obj", { 1.0f, 1.0f, 1.0f, 1.0f });
+		m_Mosa = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/mosasaurus.obj", { 1.0f, 1.0f, 1.0f, 1.0f });
+		m_Bunny = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/bunny.obj", { 1.0f, 1.0f, 1.0f, 1.0f });
+		m_Armadillo = dx3d::MeshGenerator::createFromOBJ(device, "DX3D/Assets/Models/armadillo.obj", { 1.0f, 1.0f, 1.0f, 1.0f });
+
+		int dummyW = 0, dummyH = 0;
 
 		bool loaded = LoadTextureFromFile("DX3D/Assets/Sprites/logo.png", device.getRawDevice(), &m_logoSRV, &m_logoWidth, &m_logoHeight);
 		if (!loaded)
 		{
 			OutputDebugStringA("WARNING: Failed to load logo.png! Check path directory.\n");
 		}
+		///////////////////////////////////////////////////////
+		bool loadedMosa = LoadTextureFromFile("DX3D/Assets/Textures/mosasaurus.png", device.getRawDevice(), &m_Mosa.textureSRV, &dummyW, &dummyH);
+		if (!loadedMosa)
+		{
+			OutputDebugStringA("WARNING: Failed to load mosasaurus.png!\n");
+		}
 
+		bool loadedBunny = LoadTextureFromFile("DX3D/Assets/Textures/box.png", device.getRawDevice(), &m_Bunny.textureSRV, &dummyW, &dummyH);
+		if (!loadedBunny)
+		{
+			//OutputDebugStringA("WARNING: Failed to load box.png!\n");
+		}
+
+		bool loadedTeapot = LoadTextureFromFile("DX3D/Assets/Textures/brick.png", device.getRawDevice(), &m_Teapot.textureSRV, &dummyW, &dummyH);
+		if (!loadedTeapot)
+		{
+			OutputDebugStringA("WARNING: Failed to load brick.png!\n");
+		}
+
+		bool loadedArmadillo = LoadTextureFromFile("DX3D/Assets/Textures/box.png", device.getRawDevice(), &m_Armadillo.textureSRV, &dummyW, &dummyH);
+		if (!loadedArmadillo)
+		{
+			//OutputDebugStringA("WARNING: Failed to load box.png!\n");
+		}
+		//////////////////////////////////////////
+		// Load texture for Cube Primitive
+		bool loadedCubeTex = LoadTextureFromFile("DX3D/Assets/Textures/crate.jpg", device.getRawDevice(), &m_texturedCubeMesh.textureSRV, &dummyW, &dummyH);
+		if (!loadedCubeTex)
+		{
+			OutputDebugStringA("WARNING: Failed to load crate.jpg!\n");
+		}
+
+		bool loadedPlaneText = LoadTextureFromFile("DX3D/Assets/Textures/floor.jpg", device.getRawDevice(), &m_untexturedCubeMesh.textureSRV, &dummyW, &dummyH);
+		if (!loadedPlaneText)
+		{
+			OutputDebugStringA("WARNING: Failed to load floor.jpg!\n");
+		}
+
+		dx3d::ui32 outCount = 0;
+		auto cubes = world.getComponents<dx3d::CubeComponent>(outCount);
+		
+		if (outCount >= 1)
+		{
+			// First cube object (the ground plane) uses the UNTEXTURED rainbow mesh
+			cubes[0]->setMesh(&m_untexturedCubeMesh);
+		}
+		if (outCount >= 2)
+		{
+			// Second cube object uses the TEXTURED box mesh
+			cubes[1]->setMesh(&m_texturedCubeMesh);
+		}
+
+		dx3d::ui32 meshCount = 0;
+		auto meshComps = world.getComponents<dx3d::MeshComponent>(meshCount);
+		//for (dx3d::ui32 i = 0; i < meshCount; ++i)
+		//{
+		//	meshComps[i]->setMesh(&m_Mosa);
+		//	meshComps[i]->setMesh(&m_Teapot);
+		//	meshComps[i]->setMesh(&m_Bunny);
+		//	meshComps[i]->setMesh(&m_Armadillo);
+		//}
+		if (meshCount >= 1) meshComps[0]->setMesh(&m_Mosa);
+		if (meshCount >= 2) meshComps[1]->setMesh(&m_Teapot);
+		if (meshCount >= 3) meshComps[2]->setMesh(&m_Bunny);
+		if (meshCount >= 4) meshComps[3]->setMesh(&m_Armadillo);
 		m_isInitialized = true;
 	}
 

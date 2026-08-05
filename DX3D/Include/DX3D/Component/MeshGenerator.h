@@ -4,6 +4,7 @@
 #include <DX3D/Graphics/GraphicsDevice.h>
 #include <DX3D/Math/Vec3.h>
 #include <DX3D/Math/Vec4.h>
+#include <DX3D/Math/Vec2.h>
 
 namespace dx3d
 {
@@ -17,6 +18,7 @@ namespace dx3d
             struct LocalVertex
             {
                 Vec3 position;
+                Vec2 texcoord;
                 Vec4 color;
             };
     };

@@ -63,6 +63,16 @@ ID3D11DeviceContext* dx3d::DeviceContext::getImmediateDeviceContext() const noex
 	return m_context.Get();
 }
 
+void dx3d::DeviceContext::setTexture(ui32 slot, ID3D11ShaderResourceView* srv)
+{
+	m_context->PSSetShaderResources(slot, 1, &srv);
+}
+
+void dx3d::DeviceContext::setSampler(ui32 slot, ID3D11SamplerState * sampler)
+{
+	m_context->PSSetSamplers(slot, 1, &sampler);
+}
+
 void dx3d::DeviceContext::setConstantBuffer(const ConstantBuffer& buffer)
 {
 	auto buf = buffer.m_buffer.Get();
